@@ -1,2 +1,2 @@
-rootProject.name = 'otusJava'
-include 'L01-gradle'
+rootProject.name = 'OtusJava'
+include 'hw01-gradle'

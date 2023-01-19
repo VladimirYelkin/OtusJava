@@ -119,7 +119,7 @@ class CustomerTest {
     }
 
     @Test
-    @Disabled //надо удалить
+//    @Disabled //надо удалить
     @DisplayName("Возвращание в обратном порядке")
     void reverseOrderTest() {
         //given
@@ -131,6 +131,7 @@ class CustomerTest {
         customerReverseOrder.add(customer1);
         customerReverseOrder.add(customer2);
         customerReverseOrder.add(customer3);
+
 
         //when
         Customer customerLast = customerReverseOrder.take();

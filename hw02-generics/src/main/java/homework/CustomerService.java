@@ -1,42 +1,35 @@
 package homework;
 
 
-import java.util.AbstractMap;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class CustomerService {
 
     //todo: 3. надо реализовать методы этого класса
     //важно подобрать подходящую Map-у, посмотрите на редко используемые методы, они тут полезны
-    TreeMap<Customer, String> customers = new TreeMap<>(Comparator.comparingLong(Customer::getScores));
+    NavigableMap<Customer, String> customers = new TreeMap<>(Comparator.comparingLong(Customer::getScores));
 
     public Map.Entry<Customer, String> getSmallest() {
-        var result = customers.firstEntry();
-        Map.Entry<Customer, String> res1;
-        if (result != null) {
-            res1 = new AbstractMap.SimpleEntry<Customer, String>(
-                    new Customer(result.getKey().getId(), result.getKey().getName(), result.getKey().getScores()), result.getValue());
-        } else {
-            res1 = null;
-        }
-        return res1;
+        return createMapEntryWithDeepCopyCustomer(customers.firstEntry());
     }
 
     public Map.Entry<Customer, String> getNext(Customer customer) {
-        var result = customers.higherEntry(customer);
-        Map.Entry<Customer, String> res1;
-        if (result != null) {
-            res1 = new AbstractMap.SimpleEntry<Customer, String>(
-                    new Customer(result.getKey().getId(), result.getKey().getName(), result.getKey().getScores()), result.getValue());
-        } else {
-            res1 = null;
-        }
-        return res1;
+        return createMapEntryWithDeepCopyCustomer(customers.higherEntry(customer));
     }
 
     public void add(Customer customer, String data) {
         customers.put(customer, data);
+    }
+
+    private Map.Entry<Customer, String> createMapEntryWithDeepCopyCustomer(Map.Entry<Customer, String> customerMapEntry) {
+        return Optional.ofNullable(customerMapEntry)
+                .map(customerEntry ->
+                        new AbstractMap.SimpleEntry<>(
+                                // тут напрашивается сделать конструктор у Customer c параметром Customer
+                                new Customer(customerEntry.getKey().getId(), customerEntry.getKey().getName(), customerEntry.getKey().getScores()),
+                                customerEntry.getValue()
+                        )
+                )
+                .orElse(null);
     }
 }

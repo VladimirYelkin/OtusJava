@@ -36,3 +36,7 @@ out
 *.iws
 *.ipr
 *.idea
+
+#Ignore dump
+*.hprof
+

@@ -4,6 +4,11 @@ import ru.otus.annotations.Log;
 
 public class TestLogging implements LoggingSummaryInterface {
 
+    @Override
+    public void summary(int[] arr) {
+        System.out.println("calculation origin, param1 = arrays");
+    }
+
     @Log
     public void summary(int param) {
         System.out.println("calculation origin, param = " +param);

@@ -38,8 +38,8 @@ public class ProxyClassPassThrough {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (loggingMethods.contains(method)) {
-                System.out.print("executed method:" + method.getName());
-                System.out.print(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(",", "[", "]\n")));
+                System.out.print("executed method:" + method.getName()+" "
+                        +Arrays.stream(args).map(Object::toString).collect(Collectors.joining(",", "[", "]"))+" : ");
             }
             return method.invoke(myClass, args);
         }

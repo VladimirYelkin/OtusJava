@@ -14,23 +14,23 @@ class ProxyOnlyTestLoggingClass {
     private ProxyOnlyTestLoggingClass() {
     }
 
-    static TestLoggingInterface createMyClass() {
+    static LoggingSummaryInterface createMyClass() {
         InvocationHandler handler = new DemoInvocationHandler(new TestLogging());
-        return (TestLoggingInterface) Proxy.newProxyInstance(ProxyOnlyTestLoggingClass.class.getClassLoader(),
-                new Class<?>[]{TestLoggingInterface.class}, handler);
+        return (LoggingSummaryInterface) Proxy.newProxyInstance(ProxyOnlyTestLoggingClass.class.getClassLoader(),
+                new Class<?>[]{LoggingSummaryInterface.class}, handler);
     }
 
     static class DemoInvocationHandler implements InvocationHandler {
-        private final TestLoggingInterface myClass;
+        private final LoggingSummaryInterface myClass;
         private final List<Method> loggingMethods ;
 
-        DemoInvocationHandler(TestLoggingInterface myClass) {
+        DemoInvocationHandler(LoggingSummaryInterface myClass) {
             this.myClass = myClass;
 
             List<Method> loggingMethodsOfClassByAnnotation = Arrays.stream(myClass.getClass().getDeclaredMethods())
                     .filter(m -> m.isAnnotationPresent(Log.class))
                     .collect(Collectors.toList());
-            List<Method> methodsOfLoggingInterface = Arrays.stream(TestLoggingInterface.class.getDeclaredMethods()).collect(Collectors.toList());
+            List<Method> methodsOfLoggingInterface = Arrays.stream(LoggingSummaryInterface.class.getDeclaredMethods()).collect(Collectors.toList());
 
             loggingMethods = getLoggingMethodsOfInterface(methodsOfLoggingInterface, loggingMethodsOfClassByAnnotation);
 

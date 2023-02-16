@@ -8,15 +8,15 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.stream.Collectors;
 
-class ProxyMyClass {
+class ProxyOnlyTestLoggingClass {
 
 
-    private ProxyMyClass() {
+    private ProxyOnlyTestLoggingClass() {
     }
 
     static TestLoggingInterface createMyClass() {
         InvocationHandler handler = new DemoInvocationHandler(new TestLogging());
-        return (TestLoggingInterface) Proxy.newProxyInstance(ProxyMyClass.class.getClassLoader(),
+        return (TestLoggingInterface) Proxy.newProxyInstance(ProxyOnlyTestLoggingClass.class.getClassLoader(),
                 new Class<?>[]{TestLoggingInterface.class}, handler);
     }
 

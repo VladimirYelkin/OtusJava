@@ -20,10 +20,9 @@ public class CaseOfBanknotesImp implements CaseOfBanknotes {
         if (numbersBanknotes > 0 && money > 0) {
             int needNumbersOfBanknotes = money / banknotes.getNominal();
             int numberOfBanknotestoGive = Math.min(needNumbersOfBanknotes, numbersBanknotes);
-            {
-                banknotesOut = IntStream.range(0, numberOfBanknotestoGive).mapToObj(i -> banknotes).collect(Collectors.toList());
-                numbersBanknotes -= numberOfBanknotestoGive;
-            }
+            banknotesOut = IntStream.range(0, numberOfBanknotestoGive).mapToObj(i -> banknotes).collect(Collectors.toList());
+            numbersBanknotes -= numberOfBanknotestoGive;
+
         }
         return banknotesOut;
     }

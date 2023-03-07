@@ -8,7 +8,7 @@ import static java.util.Comparator.comparingInt;
 
 public class AtmImpl implements Atm {
 
-    List<CaseOfBanknotes> caseOfBanknotes;
+    final List<CaseOfBanknotes> caseOfBanknotes;
 
     public AtmImpl(Builder builder) {
         caseOfBanknotes = builder.casesOfBanknotes.stream()
@@ -61,7 +61,7 @@ public class AtmImpl implements Atm {
 
 
     public static class Builder {
-        List<CaseOfBanknotes> casesOfBanknotes = new ArrayList<>();
+        private final List<CaseOfBanknotes> casesOfBanknotes = new ArrayList<>();
 
         public Builder initCase(CaseOfBanknotes caseOfBanknotes) {
             this.casesOfBanknotes.add(caseOfBanknotes);

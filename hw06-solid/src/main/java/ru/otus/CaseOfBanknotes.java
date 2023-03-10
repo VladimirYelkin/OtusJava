@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface CaseOfBanknotes {
     Banknotes getTypeBanknotes();
-    Integer getSumOfMoney();
-    Integer putBankNote(Banknotes banknote);
-    List<Banknotes> giveBankNotes (Integer money);
+    int getSumOfMoney();
+    int putBankNote(Banknotes banknote);
+    List<Banknotes> giveBankNotes (int money);
 }

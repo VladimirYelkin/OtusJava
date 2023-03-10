@@ -15,14 +15,13 @@ public class CaseOfBanknotesImp implements CaseOfBanknotes {
     }
 
     @Override
-    public List<Banknotes> giveBankNotes(Integer money) {
+    public List<Banknotes> giveBankNotes(int money) {
         List<Banknotes> banknotesOut = new ArrayList<>();
         if (numbersBanknotes > 0 && money > 0) {
             int needNumbersOfBanknotes = money / banknotes.getNominal();
             int numberOfBanknotestoGive = Math.min(needNumbersOfBanknotes, numbersBanknotes);
             banknotesOut = IntStream.range(0, numberOfBanknotestoGive).mapToObj(i -> banknotes).collect(Collectors.toList());
             numbersBanknotes -= numberOfBanknotestoGive;
-
         }
         return banknotesOut;
     }
@@ -33,12 +32,12 @@ public class CaseOfBanknotesImp implements CaseOfBanknotes {
     }
 
     @Override
-    public Integer getSumOfMoney() {
+    public int getSumOfMoney() {
         return numbersBanknotes * banknotes.getNominal();
     }
 
     @Override
-    public Integer putBankNote(Banknotes banknote) {
+    public int putBankNote(Banknotes banknote) {
         if (banknote != banknotes) {
             throw new AtmException("Illegal BankNote");
         }

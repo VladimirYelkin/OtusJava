@@ -1,6 +1,6 @@
 package ru.otus.model;
 
-public class Message {
+public class Message implements Copyable<Message> {
     private final long id;
     private final String field1;
     private final String field2;
@@ -16,7 +16,7 @@ public class Message {
     private final String field12;
     private final ObjectForMessage field13;
 
-    //todo: 1. Добавить поля field11 - field13 (для field13 используйте класс ObjectForMessage)
+    //1. Добавить поля field11 - field13 (для field13 используйте класс ObjectForMessage)
 
     private Message(long id, String field1, String field2, String field3, String field4, String field5, String field6, String field7, String field8, String field9, String field10, String field11, String field12, ObjectForMessage field13) {
         this.id = id;
@@ -104,6 +104,11 @@ public class Message {
     @Override
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public Message copy()  {
+        return new Message(id, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, field11, field12,field13.copy());
     }
 
     public Builder toBuilder() {

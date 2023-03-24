@@ -5,10 +5,10 @@ import ru.otus.processor.Processor;
 
 import java.time.DateTimeException;
 
-public class ProcessorThrowingException implements Processor {
+public class ProcessorThrowingTimeException implements Processor {
     DataTimeProvider dataTimeProvider;
 
-    public ProcessorThrowingException(DataTimeProvider dataTimeProvider) {
+    public ProcessorThrowingTimeException(DataTimeProvider dataTimeProvider) {
         this.dataTimeProvider = dataTimeProvider;
     }
 

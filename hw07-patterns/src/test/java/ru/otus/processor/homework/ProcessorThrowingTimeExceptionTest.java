@@ -10,7 +10,7 @@ import ru.otus.model.Message;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
-class ProcessorThrowingExceptionTest {
+class ProcessorThrowingTimeExceptionTest {
 
     DataTimeProvider dataTimeProvider;
     Message message ;
@@ -23,14 +23,14 @@ class ProcessorThrowingExceptionTest {
     @Test
     @DisplayName("Тестируем выбрасывания исключения в четную секунду")
     void processTestThrowOnEvenSecond() {
-        ProcessorThrowingException testObject = new ProcessorThrowingException(dataTimeProvider);
+        ProcessorThrowingTimeException testObject = new ProcessorThrowingTimeException(dataTimeProvider);
         Mockito.when(dataTimeProvider.getTime()).thenReturn(LocalDateTime.parse("2023-01-01T10:00:30"));
         Assertions.assertThatThrownBy(() -> testObject.process(message)).isInstanceOf(DateTimeException.class);
     }
     @Test
     @DisplayName("Тестируем отсутствие исключения в нечетную секунду")
     void processTestThrowOffOddSecond() {
-        ProcessorThrowingException testObject = new ProcessorThrowingException(dataTimeProvider);
+        ProcessorThrowingTimeException testObject = new ProcessorThrowingTimeException(dataTimeProvider);
         Mockito.when(dataTimeProvider.getTime()).thenReturn(LocalDateTime.parse("2011-11-11T11:11:11"));
         Assertions.assertThatNoException().isThrownBy(() -> testObject.process(message));
     }

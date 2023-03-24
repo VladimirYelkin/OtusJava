@@ -4,6 +4,7 @@ import ru.otus.model.Message;
 import ru.otus.processor.Processor;
 
 import java.time.DateTimeException;
+import java.time.LocalDateTime;
 
 public class ProcessorThrowingTimeException implements Processor {
     DataTimeProvider dataTimeProvider;
@@ -14,8 +15,9 @@ public class ProcessorThrowingTimeException implements Processor {
 
     @Override
     public Message process(Message message) {
-        if ((dataTimeProvider.getTime().getSecond() & 1) == 0) {
-            throw new DateTimeException("even number");
+        LocalDateTime dateTime = dataTimeProvider.getTime();
+        if ((dateTime.getSecond() & 1) == 0) {
+            throw new DateTimeException("even number: " + dateTime);
         }
         return message;
     }

@@ -35,12 +35,13 @@ public class HomeWork {
          */
 
         var processors = List.of(new ProcessorThrowingTimeException(() -> LocalDateTime.parse("2023-03-24T12:55:31")), new ProcessorSwapValuesFields11and12(),
-                 new ProcessorThrowingTimeException(() -> LocalDateTime.parse("2023-03-24T12:55:30")), new ProcessorThrowingTimeException(LocalDateTime::now));
+                 new ProcessorThrowingTimeException(() -> LocalDateTime.parse("2023-03-24T12:55:30")), new ProcessorThrowingTimeException(() -> LocalDateTime.now()));
 
         var complexProcessor = new ComplexProcessor(processors, ex ->  System.err.println(ex.getMessage()));
         var listenerPrinter = new ListenerPrinterConsole();
-        var historyListener = new HistoryListener();
         complexProcessor.addListener(listenerPrinter);
+
+        var historyListener = new HistoryListener();
         complexProcessor.addListener(historyListener);
         long id = 111L;
         var data = "hOmEwOrK7-patterns";
@@ -60,15 +61,24 @@ public class HomeWork {
                 .field13(field13)
                 .build();
 
+        System.out.println("history:" + historyListener.findMessageById(id).map(Object::toString).orElse("нет сообщения в истории"));
+
         message = complexProcessor.handle(message);
         System.out.println("result:" + message);
 
         System.out.println("change field13:");
-        message.getField13().setData(new LinkedList<>(List.of("Change","filed13")));
-
+        message.getField13().setData(new LinkedList<>(List.of("Change","of","filed13")));
         System.out.println("history:" + historyListener.findMessageById(id).map(Object::toString).orElse("нет сообщения в истории"));
         System.out.println("result:" + message);
 
+
+        System.out.println("send message to complexProcessor without HistoryListner and listenerPrinter ");
+        System.out.println(" in HistoryListner not changes  &  in result  fields11 and fields12 change values");
+        complexProcessor.removeListener(historyListener);
+        complexProcessor.removeListener(listenerPrinter);
+        message = complexProcessor.handle(message);
+        System.out.println("history:" + historyListener.findMessageById(id).map(Object::toString).orElse("нет сообщения в истории"));
+        System.out.println("result:" + message);
 
     }
 }

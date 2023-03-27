@@ -28,7 +28,7 @@ public class StorageCasesIml implements StorageCases {
 
 
     public List<Banknotes> giveMoney(Integer money) {
-        if (money > getSumMoney() || getSumMoney() == 0) {
+        if (money > getSumMoney()) {
             throw new AtmException("ATM does not have the necessary amount of money");
         }
 

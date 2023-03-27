@@ -4,5 +4,6 @@ include 'hw02-generics'
 include 'hw03-reflection'
 include 'hw04-gc'
 include 'hw05-dynamicProxy'
+include 'hw06-solid'
+include 'hw07-patterns'
 include 'hw08-json'
-

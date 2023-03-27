@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class HistoryListener implements Listener, HistoryReader {
-    Map<Long, Message> history = new HashMap<>();
+    private final Map<Long, Message> history = new HashMap<>();
 
 
     @Override

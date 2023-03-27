@@ -32,6 +32,8 @@ public class Demo {
         showGetFromAtmBanknotes(atm, 2000); // или 2000
         showPutInAtmBanknote(atm, BanknotesImpl.TWOTHOUSAND); // корзины для 2000 нет - должно быть сообщение об ошибке
         showPutInAtmBanknote(atm, BanknotesImpl.FIVETHOUSAND); // корзина для 5000 есть
+        showGetFromAtmBanknotes(atm, 6550); // или 2000
+        showGetFromAtmBanknotes(atm, 0); // или 2000
 
     }
 

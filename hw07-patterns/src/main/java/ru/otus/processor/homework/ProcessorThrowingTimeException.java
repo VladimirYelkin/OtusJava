@@ -7,7 +7,7 @@ import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 public class ProcessorThrowingTimeException implements Processor {
-    DataTimeProvider dataTimeProvider;
+    private final DataTimeProvider dataTimeProvider;
 
     public ProcessorThrowingTimeException(DataTimeProvider dataTimeProvider) {
         this.dataTimeProvider = dataTimeProvider;

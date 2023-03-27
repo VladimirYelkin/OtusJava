@@ -11,14 +11,15 @@ public class Demo {
 
     public void run() {
 
-        Atm atm = new AtmImpl.Builder()
+        StorageCases storageCases = new StorageCasesIml.Builder()
+                .initCase(new CaseOfBanknotesImp(BanknotesImpl.FIVETHOUSAND, 0))
                 .initCase(new CaseOfBanknotesImp(BanknotesImpl.FIFTY, 5))
                 .initCase(new CaseOfBanknotesImp(BanknotesImpl.ONEHUNDRED, 20))
                 .initCase(new CaseOfBanknotesImp(BanknotesImpl.TWOHUNDRED, 10))
                 .initCase(new CaseOfBanknotesImp(BanknotesImpl.FIVEHUNDRED, 5))
                 .initCase(new CaseOfBanknotesImp(BanknotesImpl.ONETHOUSAND, 8))
-                .initCase(new CaseOfBanknotesImp(BanknotesImpl.FIVETHOUSAND, 0))
                 .build();
+        Atm atm = new AtmImpl(storageCases);
 
         showBalance(atm);
         showPutInAtmBanknote(atm, BanknotesImpl.ONEHUNDRED);

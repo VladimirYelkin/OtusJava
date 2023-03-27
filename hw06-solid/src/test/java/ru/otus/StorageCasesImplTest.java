@@ -13,8 +13,8 @@ import java.util.Collections;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-@DisplayName("Класс ATMImplTest")
-class AtmImplTest {
+@DisplayName("Класс StorageCasesIml")
+class StorageCasesImplTest {
     private Banknotes banknote50;
     private Banknotes banknote100;
     private Banknotes banknote200;
@@ -63,17 +63,17 @@ class AtmImplTest {
     }
 
     @Test
-    @DisplayName("Создание объекта АТМ")
+    @DisplayName("Создание объекта StorageCases")
     void createAtmTest() {
 
-        Atm atmTest = new AtmImpl.Builder().initCase(case100).initCase(case500).initCase(case50).build();
-        assertThat(atmTest).isInstanceOf(Atm.class);
+        StorageCases storageCases = new StorageCasesIml.Builder().initCase(case100).initCase(case500).initCase(case50).build();
+        assertThat(storageCases).isInstanceOf(StorageCases.class);
     }
 
     @Test
-    @DisplayName("Получаем общую сумму денег в АТМ")
+    @DisplayName("Получаем общую сумму денег в StorageCases")
     void getSumMoneyTest() {
-        Atm atmTest;
+        StorageCases storageCases;
 
         int numbersBanknotesOfCase1Init = 50;
         int nominalBanknotesOfCase1 = case100.getTypeBanknotes().getNominal();
@@ -90,37 +90,37 @@ class AtmImplTest {
         Mockito.when(case50.getSumOfMoney()).thenReturn(numbersBanknotesOfCase3Init * nominalBanknotesOfCase3);
         CaseOfBanknotes caseOfBanknotes3 = case50;
 
-        atmTest = new AtmImpl.Builder().initCase(caseOfBanknotes1).initCase(caseOfBanknotes2).initCase(caseOfBanknotes3).build();
-        assertThat(atmTest.getSumMoney())
+        storageCases = new StorageCasesIml.Builder().initCase(caseOfBanknotes1).initCase(caseOfBanknotes2).initCase(caseOfBanknotes3).build();
+        assertThat(storageCases.getSumMoney())
                 .isEqualTo(nominalBanknotesOfCase1 * numbersBanknotesOfCase1Init
                         + nominalBanknotesOfCase2 * numbersBanknotesOfCase2Init
                         + nominalBanknotesOfCase3 * numbersBanknotesOfCase3Init);
     }
 
     @Test
-    @DisplayName("Добавляем купюру в АТМ")
+    @DisplayName("Добавляем купюру в StorageCases")
     void receiveBankNote() {
-        Atm atmTest;
+        StorageCases storageCases;
         InOrder inOrderCaseOfAdd = Mockito.inOrder(case100);
         InOrder inOrderCaseWithOutAdditional = Mockito.inOrder(case50);
-        atmTest = new AtmImpl.Builder().initCase(case100).initCase(case50).build();
-        atmTest.receiveBankNote(banknote100);
+        storageCases = new StorageCasesIml.Builder().initCase(case100).initCase(case50).build();
+        storageCases.receiveBankNote(banknote100);
         inOrderCaseOfAdd.verify(case100, times(1)).putBankNote(banknote100);
         inOrderCaseWithOutAdditional.verify(case50, times(0)).putBankNote(banknote100);
     }
 
     @Test
-    @DisplayName("Добавляем купюру в АТМ корзины для которой нет - ждем AtmException")
+    @DisplayName("Добавляем купюру в StorageCases корзины для которой нет - ждем AtmException")
     void receiveIllegalBankNote() {
-        Atm atmTest;
-        atmTest = new AtmImpl.Builder().initCase(case100).build();
-        Assertions.assertThatThrownBy(() -> atmTest.receiveBankNote(banknote1000)).isInstanceOf(AtmException.class);
+        StorageCases storageCases;
+        storageCases = new StorageCasesIml.Builder().initCase(case100).build();
+        Assertions.assertThatThrownBy(() -> storageCases.receiveBankNote(banknote1000)).isInstanceOf(AtmException.class);
     }
 
     @Test
-    @DisplayName("Получаем банкноты с АТМ")
+    @DisplayName("Получаем банкноты с StorageCases")
     void giveMoneyTest() {
-        Atm atmTest;
+        StorageCases storageCases;
 
         int numbersBanknotesOfCase1Init = 10;
         int nominalBanknotesOfCase1 = case100.getTypeBanknotes().getNominal();
@@ -137,14 +137,14 @@ class AtmImplTest {
         Mockito.when(case50.getSumOfMoney()).thenReturn(numbersBanknotesOfCase3Init * nominalBanknotesOfCase3);
         Mockito.when(case50.giveBankNotes(50)).thenReturn(Collections.singletonList(banknote50));
 
-        atmTest = new AtmImpl.Builder().initCase(case100).initCase(case500).initCase(case50).build();
-        assertThat(atmTest.giveMoney(850)).isEqualTo(Arrays.asList(banknote500, banknote100, banknote100, banknote100, banknote50));
+        storageCases = new StorageCasesIml.Builder().initCase(case100).initCase(case500).initCase(case50).build();
+        assertThat(storageCases.giveMoney(850)).isEqualTo(Arrays.asList(banknote500, banknote100, banknote100, banknote100, banknote50));
     }
 
     @Test
-    @DisplayName("Получаем банкноты с АТМ нужных купюр нет - ждем AtmException")
+    @DisplayName("Получаем банкноты с StorageCases нужных купюр нет - ждем AtmException")
     void giveMoneyTestWithException() {
-        Atm atmTest;
+        StorageCases storageCases;
 
         int numbersBanknotesOfCase1Init = 10;
         int nominalBanknotesOfCase1 = case100.getTypeBanknotes().getNominal();
@@ -156,7 +156,7 @@ class AtmImplTest {
         Mockito.when(case500.getSumOfMoney()).thenReturn(numbersBanknotesOfCase2Init * nominalBanknotesOfCase2);
         Mockito.when(case500.giveBankNotes(850)).thenReturn(Collections.singletonList(banknote500));
 
-        atmTest = new AtmImpl.Builder().initCase(case100).initCase(case500).build();
-        Assertions.assertThatThrownBy(() -> atmTest.giveMoney(850)).isInstanceOf(AtmException.class);
+        storageCases = new StorageCasesIml.Builder().initCase(case100).initCase(case500).build();
+        Assertions.assertThatThrownBy(() -> storageCases.giveMoney(850)).isInstanceOf(AtmException.class);
     }
 }

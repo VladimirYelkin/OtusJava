@@ -1,5 +1,7 @@
 package ru.otus.jdbc.mapper;
 
+import ru.otus.annotations.ClassMetaData;
+
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.stream.Collectors;
 public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
     private static final String SELECT_ALL_FROM = "select * from %s";
     private static final String WHERE = " where %s = ?";
-
+    @ClassMetaData
     private final EntityClassMetaData<T> entityClassMetaData;
 
     public EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaData) {
@@ -22,7 +24,7 @@ public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
 
     @Override
     public String getSelectByIdSql() {
-        return String.format(SELECT_ALL_FROM+WHERE,
+        return String.format(SELECT_ALL_FROM + WHERE,
                 entityClassMetaData.getName(),
                 entityClassMetaData.getIdField().getName());
     }
@@ -47,7 +49,7 @@ public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
 
         return String.format("update %s set %s",
                 entityClassMetaData.getName(),
-                updateFields+whereStr);
+                updateFields + whereStr);
     }
 
 }

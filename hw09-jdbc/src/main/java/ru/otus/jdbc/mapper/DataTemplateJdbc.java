@@ -9,9 +9,10 @@ import ru.otus.core.repository.executor.DbExecutor;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -38,7 +39,10 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             var fieldEntityClassMetaDataAnnotation = Arrays.stream(entitySQLMetaData.getClass().getDeclaredFields())
                     .filter(field -> field.isAnnotationPresent(ClassMetaData.class))
                     .findFirst()
-                    .map(field -> { field.setAccessible(true);return field;})
+                    .map(field -> {
+                        field.setAccessible(true);
+                        return field;
+                    })
                     .orElseThrow(() -> new RuntimeException("not find annotation" + ClassMetaData.class.getSimpleName()));
             this.entityClassMetaData = (EntityClassMetaData<T>) fieldEntityClassMetaDataAnnotation.get(this.entitySQLMetaData);
         } catch (IllegalAccessException e) {
@@ -58,8 +62,18 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     }
 
     @Override
-    public long insert(Connection connection, T client) {
-        throw new UnsupportedOperationException();
+    public long insert(Connection connection, T obj) {
+
+        String insertSql = entitySQLMetaData.getInsertSql();
+        try {
+            List<Object> params = getValuesFields(obj, entityClassMetaData.getFieldsWithoutId());
+            return dbExecutor.executeStatement(connection,
+                    insertSql,
+                    params);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            throw new DataTemplateException(e);
+        }
     }
 
     @Override
@@ -67,4 +81,31 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
         throw new UnsupportedOperationException();
     }
 
+    private List<Object> getValuesFields(T obj, List<Field> fields) throws IllegalAccessException {
+        List<Object> valuesOfFields = new ArrayList<>();
+        fields.stream().forEach(consumerWrapper(field -> {
+            field.setAccessible(true);
+            valuesOfFields.add(field.get(obj));
+        }));
+        return valuesOfFields;
+    }
+
+
+    @FunctionalInterface
+    public interface ThrowingConsumer<T, E extends Exception> {
+
+        void accept(T t) throws E;
+    }
+
+    private <T> Consumer<T> consumerWrapper(
+            ThrowingConsumer<T, Exception> throwingConsumer) {
+
+        return i -> {
+            try {
+                throwingConsumer.accept(i);
+            } catch (Exception ex) {
+                throw new DataTemplateException(ex);
+            }
+        };
+    }
 }

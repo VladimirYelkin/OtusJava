@@ -95,8 +95,14 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     }
 
     @Override
-    public void update(Connection connection, T client) {
-        throw new UnsupportedOperationException();
+    public void update(Connection connection, T obj) {
+        try {
+            List<Object> params = getValuesFields(obj, entityClassMetaData.getFieldsWithoutId());
+            params.addAll(getValuesFields(obj, Collections.singletonList(entityClassMetaData.getIdField())));
+            dbExecutor.executeStatement(connection, entitySQLMetaData.getUpdateSql(), params);
+        } catch (Exception e) {
+            throw new DataTemplateException(e);
+        }
     }
 
     private List<Object> getValuesFields(T obj, List<Field> fields) throws IllegalAccessException {

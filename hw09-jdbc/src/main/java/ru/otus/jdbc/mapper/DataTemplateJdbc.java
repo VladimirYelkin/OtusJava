@@ -9,6 +9,7 @@ import ru.otus.core.repository.executor.DbExecutor;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,7 +54,16 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
 
     @Override
     public Optional<T> findById(Connection connection, long id) {
-        throw new UnsupportedOperationException();
+        return dbExecutor.executeSelect(connection, entitySQLMetaData.getSelectByIdSql(), List.of(id), rs -> {
+            try {
+                if (rs.next()) {
+                    return createObjectFromResult(rs);
+                }
+                return null;
+            } catch (Exception e) {
+                throw new DataTemplateException(e);
+            }
+        });
     }
 
     @Override
@@ -107,5 +117,17 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
                 throw new DataTemplateException(ex);
             }
         };
+    }
+
+    private T createObjectFromResult(ResultSet rs) {
+        try {
+            T obj = (T) entityClassMetaData.getConstructor().newInstance();
+            entityClassMetaData.getAllFields().stream()
+                    .forEach(consumerWrapper(field -> {field.setAccessible(true);field.set(obj, rs.getObject(field.getName()));}));
+            return obj;
+        } catch (Exception e) {
+            throw new DataTemplateException(e);
+        }
+
     }
 }

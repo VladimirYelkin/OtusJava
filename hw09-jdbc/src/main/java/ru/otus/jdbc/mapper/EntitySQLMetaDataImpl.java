@@ -8,23 +8,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
-    private static final String SELECT_ALL_FROM = "select * from %s";
+    private static final String SELECT_ALL_FROM = "select %s from %s";
     private static final String WHERE = " where %s = ?";
+    private final String allFieldsSelect;
     @ClassMetaData
     private final EntityClassMetaData<T> entityClassMetaData;
 
     public EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaData) {
         this.entityClassMetaData = entityClassMetaData;
+        allFieldsSelect = this.entityClassMetaData.getAllFields().stream()
+                .map(Field::getName)
+                .collect(Collectors.joining(","));
     }
 
     @Override
     public String getSelectAllSql() {
-        return String.format(SELECT_ALL_FROM, entityClassMetaData.getName());
+        return String.format(SELECT_ALL_FROM, allFieldsSelect, entityClassMetaData.getName());
     }
 
     @Override
     public String getSelectByIdSql() {
-        return String.format(SELECT_ALL_FROM + WHERE,
+        return String.format(SELECT_ALL_FROM + WHERE, allFieldsSelect,
                 entityClassMetaData.getName(),
                 entityClassMetaData.getIdField().getName());
     }

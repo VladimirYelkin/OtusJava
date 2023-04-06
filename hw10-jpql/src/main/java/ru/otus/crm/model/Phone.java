@@ -20,31 +20,32 @@ public class Phone implements Cloneable{
     private Long id;
 
     @Column()
-    private String phone;
+    private String number;
 
     @ManyToOne
+    @JoinColumn
     private Client client;
 
     public Phone(String phone) {
-        this.phone = phone;
+        this.number = phone;
     }
 
-    public Phone(Long id, String phone) {
+    public Phone(Long id, String number) {
         this.id = id;
-        this.phone = phone;
+        this.number = number;
     }
 
     @Override
     public String toString() {
         return "Phone{" +
                 "id=" + id +
-                ", phone='" + phone + '\'' +
+                ", phone='" + number + '\'' +
                 '}';
     }
 
     @Override
     public Phone clone()  {
-        return new Phone(this.id,this.phone,this.client);
+        return new Phone(this.id,this.number,this.client);
     }
 
 

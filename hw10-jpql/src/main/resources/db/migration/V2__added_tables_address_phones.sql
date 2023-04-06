@@ -10,7 +10,7 @@ alter table client add constraint  frnKeyAdressOfClient foreign key (address_id)
 create table phones
 (
     id   bigserial not null primary key,
-    phone varchar(30),
+    number varchar(30),
     client_id bigint
 );
 

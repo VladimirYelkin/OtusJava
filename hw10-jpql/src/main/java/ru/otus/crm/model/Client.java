@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +29,14 @@ public class Client implements Cloneable {
     @Column()
     private String name;
 
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true) // при данном варианте падает тест DBServiceClientTest
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) //
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true) // при данном варианте падает тест DBServiceClientTest
+//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) //
     @JoinColumn(name = "address_id")
     private Address address;
 
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client", orphanRemoval = true)
-    private List<Phone> phones;
+    private List<Phone> phones = new ArrayList<>();
 
 
     public Client(Long id, String name) {
@@ -57,7 +58,7 @@ public class Client implements Cloneable {
     public Client clone() {
         return new Client(id, name
                 , Optional.ofNullable(address).map(address -> address.clone()).orElse(null)
-                , Optional.ofNullable(phones).map(phones -> phones.stream().map(Phone::clone).toList()).orElse(null)
+                , Optional.ofNullable(phones).map(phones -> phones.stream().map(Phone::clone).toList()).orElse(new ArrayList<>())
         );
     }
 

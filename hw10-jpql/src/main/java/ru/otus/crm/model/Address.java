@@ -11,9 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-import java.util.Objects;
-
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,20 +23,20 @@ public class Address implements Cloneable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column()
-    private String address;
+    @Column(name = "address")
+    private String streetAddress;
 
     @Override
     public String toString() {
         return "Address{" +
                 "id=" + id +
-                ", address='" + address + '\'' +
+                ", address='" + streetAddress + '\'' +
                 '}';
     }
 
     @Override
     public Address clone() {
-        return new Address(this.id,this.address);
+        return new Address(this.id,this.streetAddress);
     }
 
 }

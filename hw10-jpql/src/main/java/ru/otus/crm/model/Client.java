@@ -29,8 +29,8 @@ public class Client implements Cloneable {
     @Column()
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true) // при данном варианте падает тест DBServiceClientTest
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) //
+//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true) // при данном варианте падает тест DBServiceClientTest
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) //
     @JoinColumn(name = "address_id")
     private Address address;
 

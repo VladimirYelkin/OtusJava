@@ -23,7 +23,7 @@ public class Phone implements Cloneable{
     private String number;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "client_id")
     private Client client;
 
     public Phone(String phone) {

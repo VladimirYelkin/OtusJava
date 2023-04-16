@@ -10,7 +10,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     implementation("ch.qos.logback:logback-classic")
-    implementation("org.hibernate.orm:hibernate-core")
+//    implementation("org.hibernate.orm:hibernate-core")
+    implementation("org.hibernate:hibernate-core:6.2.0.Final")
     implementation('org.flywaydb:flyway-core')
 
     implementation("org.postgresql:postgresql")
@@ -26,6 +27,9 @@ dependencies {
 }
 
 test {
+    minHeapSize = "256m"
+    maxHeapSize = "256m"
+    jvmArgs '-Xlog:gc=debug'
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"

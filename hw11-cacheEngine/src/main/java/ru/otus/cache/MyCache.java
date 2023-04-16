@@ -10,25 +10,25 @@ public class MyCache<K, V> implements HwCache<K, V> {
     private static final Logger logger = LoggerFactory.getLogger(MyCache.class);
     private final Map<K, V> cacheMap = new WeakHashMap<>();
     private final List<WeakReference<HwListener<K, V>>> listeners = new ArrayList<>();
-    //    private SoftReference<List<SoftReference<HwListener<K, V>>>> softReferenceListeners = new SoftReference<>(new ArrayList<>());
+
     //Надо реализовать эти методы
     @Override
     public void put(K key, V value) {
-        logger.debug("put: key:{} value{}", key, value);
+        logger.debug("put: key:{} value{}  size WeekHashMap{}", key, value, cacheMap.size());
         event(key, value, "put");
         cacheMap.put(key, value);
     }
 
     @Override
     public void remove(K key) {
-        logger.debug("remove: key:{} ", key);
+        logger.debug("remove: key:{} size WeekHashMap{}", key, cacheMap.size());
         event(key, cacheMap.get(key), "remove");
         cacheMap.remove(key);
     }
 
     @Override
     public V get(K key) {
-        logger.debug("get: key:{} ", key);
+        logger.debug("get: key:{} size WeekHashMap{}", key, cacheMap.size());
         event(key, cacheMap.get(key), "get");
         return cacheMap.get(key);
     }
@@ -45,12 +45,6 @@ public class MyCache<K, V> implements HwCache<K, V> {
         listeners.removeIf(hwListenerWeakReference ->
                 Optional.ofNullable(hwListenerWeakReference.get()).isEmpty() || listener.equals(hwListenerWeakReference.get())
         );
-    }
-
-    private void showListeners() {
-        System.out.println("show listeners");
-        listeners.forEach(hwListenerWeakReference -> System.out.println(hwListenerWeakReference + " " + hwListenerWeakReference.get()));
-        System.out.println(listeners.size());
     }
 
     private void event(K key, V value, String action) {

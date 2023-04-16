@@ -7,6 +7,8 @@ import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import ru.otus.cache.HwCache;
+import ru.otus.cache.MyCache;
 import ru.otus.core.repository.DataTemplateHibernate;
 import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
@@ -17,8 +19,6 @@ import ru.otus.crm.model.Phone;
 import ru.otus.crm.service.DBServiceClient;
 import ru.otus.crm.service.DbServiceClientImpl;
 
-import javax.swing.text.AbstractDocument;
-
 import static ru.otus.demo.DbServiceDemo.HIBERNATE_CFG_FILE;
 
 
@@ -27,6 +27,7 @@ public abstract class AbstractHibernateTest {
     protected TransactionManagerHibernate transactionManager;
     protected DataTemplateHibernate<Client> clientTemplate;
     protected DBServiceClient dbServiceClient;
+    protected HwCache<String, Client> cache;
 
     private static TestContainersConfig.CustomPostgreSQLContainer CONTAINER;
 
@@ -59,7 +60,8 @@ public abstract class AbstractHibernateTest {
 
         transactionManager = new TransactionManagerHibernate(sessionFactory);
         clientTemplate = new DataTemplateHibernate<>(Client.class);
-        dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
+        cache = new MyCache<>();
+        dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, cache);
     }
 
     protected EntityStatistics getUsageStatistics() {

@@ -1,5 +1,6 @@
 package ru.otus.crm.model;
 
+import com.google.gson.annotations.Expose;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +20,10 @@ public class Phone implements Cloneable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Expose
     @Column()
     private String number;
+
 
     @ManyToOne
     @JoinColumn(name = "client_id")

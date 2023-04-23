@@ -1,6 +1,7 @@
 package ru.otus.crm.model;
 
 
+import com.google.gson.annotations.Expose;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @EqualsAndHashCode
 public class Client implements Cloneable {
 
+    @Expose
     @Id
     @SequenceGenerator(name = "client_gen", sequenceName = "client_seq",
             initialValue = 1, allocationSize = 1)
@@ -26,14 +28,17 @@ public class Client implements Cloneable {
     @Column()
     private Long id;
 
+    @Expose
     @Column()
     private String name;
 
 //    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true) // при данном варианте падает тест DBServiceClientTest
+    @Expose
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true) //
     @JoinColumn(name = "address_id")
     private Address address;
 
+    @Expose
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "client", orphanRemoval = true)
     private List<Phone> phones = new ArrayList<>();

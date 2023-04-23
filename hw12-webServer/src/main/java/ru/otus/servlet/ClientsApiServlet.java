@@ -21,8 +21,6 @@ public class ClientsApiServlet extends HttpServlet {
 
     private final DBServiceClient dbServiceClient;
     private final Gson gson;
-    private static final String TEMPLATE_ALL_CLIENTS_HTML = "templateAllClients.html";
-    private static final String TEMPLATE_ATTR_CLIENT = "clients";
     private final TemplateProcessor templateProcessor;
 
     public ClientsApiServlet(DBServiceClient dbServiceClient, Gson gson, TemplateProcessor templateProcessor) {
@@ -40,29 +38,20 @@ public class ClientsApiServlet extends HttpServlet {
             Client client = dbServiceClient.getClient(extractIdFromRequest(request)).orElse(null);
             out.print(gson.toJson(client));
         } else  {
-            Map<String, Object> paramsMap = new HashMap<>();
             var  clients = dbServiceClient.findAll();
             var clientsJson = clients.stream().map(client -> gson.toJson(client)).collect(Collectors.toList());
             response.setContentType("application/json;charset=UTF-8");
             ServletOutputStream out = response.getOutputStream();
             out.print(gson.toJson(clientsJson));
-
-//            paramsMap.put(TEMPLATE_ATTR_CLIENT,clients);
-//
-//            response.setContentType("text/html;charset=UTF-8");
-//            response.getWriter().println(templateProcessor.getPage(TEMPLATE_ALL_CLIENTS_HTML, paramsMap));
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws  IOException {
-        StringBuilder sb = new StringBuilder();
         BufferedReader reader = request.getReader();
         Client client = gson.fromJson(reader, Client.class);
-
         Client savedClient = dbServiceClient.saveClient(client);
-
         response.setContentType("application/json;charset=UTF-8");
         ServletOutputStream out = response.getOutputStream();
         out.print(gson.toJson(savedClient));

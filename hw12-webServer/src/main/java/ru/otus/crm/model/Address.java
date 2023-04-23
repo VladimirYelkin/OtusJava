@@ -1,5 +1,6 @@
 package ru.otus.crm.model;
 
+import com.google.gson.annotations.Expose;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ public class Address implements Cloneable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Expose
     @Column(name = "address")
     private String streetAddress;
 

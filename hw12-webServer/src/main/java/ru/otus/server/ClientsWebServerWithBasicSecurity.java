@@ -9,29 +9,30 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.security.Constraint;
-import ru.otus.dao.UserDao;
+import ru.otus.crm.service.DBServiceClient;
 import ru.otus.services.TemplateProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class UsersWebServerWithBasicSecurity extends UsersWebServerSimple {
+public class ClientsWebServerWithBasicSecurity extends ClientsWebServerSimple {
     private static final String ROLE_NAME_USER = "user";
     private static final String ROLE_NAME_ADMIN = "admin";
     private static final String CONSTRAINT_NAME = "auth";
 
     private final LoginService loginService;
 
-    public UsersWebServerWithBasicSecurity(int port,
-                                           LoginService loginService,
-                                           UserDao userDao,
-                                           Gson gson,
-                                           TemplateProcessor templateProcessor) {
-        super(port, userDao, gson, templateProcessor);
+    public ClientsWebServerWithBasicSecurity(int port,
+                                             LoginService loginService,
+                                             DBServiceClient dbServiceClient,
+                                             Gson gson,
+                                             TemplateProcessor templateProcessor) {
+        super(port, dbServiceClient, gson, templateProcessor);
         this.loginService = loginService;
     }
 
+    @Override
     protected Handler applySecurity(ServletContextHandler servletContextHandler, String... paths) {
         Constraint constraint = new Constraint();
         constraint.setName(CONSTRAINT_NAME);

@@ -11,8 +11,7 @@ import ru.otus.services.TemplateProcessor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+
 
 
 public class ClientsApiServlet extends HttpServlet {
@@ -32,16 +31,16 @@ public class ClientsApiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         long id = extractIdFromRequest(request);
+        response.setContentType("application/json;charset=UTF-8");
+        ServletOutputStream out = response.getOutputStream();
         if (id != -1L ) {
-            response.setContentType("application/json;charset=UTF-8");
-            ServletOutputStream out = response.getOutputStream();
-            Client client = dbServiceClient.getClient(extractIdFromRequest(request)).orElse(null);
+            var client = dbServiceClient.getClient(id).orElse(null);
             out.print(gson.toJson(client));
         } else  {
             var  clients = dbServiceClient.findAll();
-            var clientsJson = clients.stream().map(client -> gson.toJson(client)).collect(Collectors.toList());
-            response.setContentType("application/json;charset=UTF-8");
-            ServletOutputStream out = response.getOutputStream();
+            var clientsJson = clients.stream()
+                    .map(gson::toJson)
+                    .toList();
             out.print(gson.toJson(clientsJson));
         }
     }

@@ -1,5 +1,7 @@
 package ru.otus.appcontainer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
@@ -9,6 +11,7 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
+    private static final Logger log = LoggerFactory.getLogger(AppComponentsContainerImpl.class);
 
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
@@ -27,20 +30,14 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 .toList();
 
         for (var method : declaredMethods) {
-            if (method.getParameters().length == 0) {
-                var appComponent = callMethod(configBean, method);
-                appComponents.add(appComponent);
-                appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
-            } else {
-                List<Object> paramArg = new ArrayList<>();
-                for (Parameter param : method.getParameters()) {
-                    System.out.println("param:" + param.getType());
-                    paramArg.add(getAppComponent(param.getType()));
-                }
-                var appComponent = callMethod(configBean, method, paramArg.toArray());
-                appComponents.add(appComponent);
-                appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
+            List<Object> paramArg = new ArrayList<>();
+            for (Parameter param : method.getParameters()) {
+                log.debug("param: {}", param.getType());
+                paramArg.add(getAppComponent(param.getType()));
             }
+            var appComponent = callMethod(configBean, method, paramArg.toArray());
+            appComponents.add(appComponent);
+            appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
         }
     }
 
@@ -54,7 +51,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     public <C> C getAppComponent(Class<C> componentClass) {
         for (var appComponent : appComponents) {
             if (componentClass.isAssignableFrom(appComponent.getClass())) {
-                System.out.println("find: " + componentClass + " " + appComponent);
+                log.debug("find: {} {} ", componentClass, appComponent);
                 return (C) appComponent;
             }
         }
@@ -84,7 +81,4 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         }
     }
 
-    private static Class<?>[] toClasses(Object[] args) {
-        return Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new);
-    }
 }

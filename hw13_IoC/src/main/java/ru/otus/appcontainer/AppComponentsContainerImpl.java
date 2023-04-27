@@ -1,7 +1,6 @@
 package ru.otus.appcontainer;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.TypeAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;

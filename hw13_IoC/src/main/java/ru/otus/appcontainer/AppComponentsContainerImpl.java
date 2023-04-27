@@ -1,5 +1,7 @@
 package ru.otus.appcontainer;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;
@@ -10,103 +12,37 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.reflections.scanners.Scanners.SubTypes;
+import static org.reflections.scanners.Scanners.TypesAnnotated;
+
 public class AppComponentsContainerImpl implements AppComponentsContainer {
     private static final Logger log = LoggerFactory.getLogger(AppComponentsContainerImpl.class);
 
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
 
-    private List<InfoMethod> declaredInfoMethods = new ArrayList<>();
 
     public AppComponentsContainerImpl(Class<?> initialConfigClass) {
-        this(initialConfigClass, new Class<?>[]{});
-//        processConfig(initialConfigClass);
+        this(Set.of(initialConfigClass));
     }
 
-    public AppComponentsContainerImpl(Class<?> initialConfigClass, Class<?>... additiveConfigClasses) {
-        List<Class<?>> allInitialConfigClass = Arrays.stream(additiveConfigClasses).collect(Collectors.toList());
-        allInitialConfigClass.add(initialConfigClass);
-        allInitialConfigClass.stream()
-                .sorted(Comparator.comparingInt(classConfig -> classConfig.getAnnotation(AppComponentsContainerConfig.class).order()));
-        processConfig(initialConfigClass);
-        for (var configClass : additiveConfigClasses) {
-            processConfig(configClass);
-            log.info("order config class={}", configClass.getAnnotation(AppComponentsContainerConfig.class).order());
-        }
-        createBeans();
-    }
-
-    private void processConfig(Class<?> configClass) {
-        checkConfigClass(configClass);
-        // You code here...
-        Object configBean = instantiate(configClass);
-
-        this.declaredInfoMethods.addAll(getMethodsCreateComponent(configClass, configBean));
-
-//        var declaredMethods = Arrays.stream(configClass.getDeclaredMethods())
-//                .filter(m -> m.isAnnotationPresent(AppComponent.class))
-//                .sorted(Comparator.comparingInt(method -> method.getAnnotation(AppComponent.class).order()))
-//                .map(method -> {
-//                    return new InfoMethod(method, method.getAnnotation(AppComponent.class).order(), configBean);
-//                })
-//                .collect(Collectors.toList());
-
-//        declaredInfoMethods.forEach(methodInfo -> {
-//            var method = methodInfo.getMethod();
-//            List<Object> paramArg = new ArrayList<>();
-//            Arrays.stream(method.getParameters()).forEachOrdered(param -> {
-//                log.debug("param: {}", param.getType());
-//                paramArg.add(getAppComponent(param.getType()));
-//            });
-//            var appComponent = callMethod(methodInfo.getBean(), method, paramArg.toArray());
-//            appComponents.add(appComponent);
-//            if (appComponentsByName.containsKey(method.getAnnotation(AppComponent.class).name())) {
-//                throw new RuntimeException();
-//            } else {
-//                appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
-//            }
-//        });
-    }
-
-    private void createBeans() {
-        declaredInfoMethods.stream()
-                .sorted(Comparator.comparingInt(methodInfo -> methodInfo.getMethod().getAnnotation(AppComponent.class).order()))
-                .sorted(Comparator.comparingInt(methodInfo -> methodInfo.getMethod().getDeclaringClass().getAnnotation(AppComponentsContainerConfig.class).order()))
-                .peek(infoMethod -> {log.info("method inf get class {}",infoMethod.getMethod().getDeclaringClass().getAnnotation(AppComponentsContainerConfig.class).order());})
-                .forEach(methodInfo -> {
-                    var method = methodInfo.getMethod();
-                    List<Object> paramArg = new ArrayList<>();
-                    Arrays.stream(method.getParameters()).forEachOrdered(param -> {
-                        log.debug("param: {}", param.getType());
-                        paramArg.add(getAppComponent(param.getType()));
-                    });
-                    var appComponent = callMethod(methodInfo.getBean(), method, paramArg.toArray());
-                    appComponents.add(appComponent);
-                    if (appComponentsByName.containsKey(method.getAnnotation(AppComponent.class).name())) {
-                        throw new RuntimeException();
-                    } else {
-                        appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
-                    }
+    public AppComponentsContainerImpl(Set<Class<?>> initialConfigClasses) {
+        initialConfigClasses.stream()
+                .sorted(Comparator.comparingInt(classConfig -> classConfig.getAnnotation(AppComponentsContainerConfig.class).order()))
+                .forEach(configClass -> {
+                    log.debug("order config class={}", configClass.getAnnotation(AppComponentsContainerConfig.class).order());
+                    processConfig(configClass);
                 });
     }
 
-    private List<InfoMethod> getMethodsCreateComponent(Class<?> configClass,
-                                                       Object beanConfiguration
-    ) {
-        return Arrays.stream(configClass.getDeclaredMethods())
-                .filter(m -> m.isAnnotationPresent(AppComponent.class))
-                .sorted(Comparator.comparingInt(method -> method.getAnnotation(AppComponent.class).order()))
-                .map(method -> {
-                    return new InfoMethod(method, method.getAnnotation(AppComponent.class).order(), beanConfiguration);
-                })
-                .collect(Collectors.toList());
-
+    public AppComponentsContainerImpl(Class<?>... additiveConfigClasses) {
+        this(Arrays.stream(additiveConfigClasses).collect(Collectors.toSet()));
     }
 
-    private void checkConfigClass(Class<?> configClass) {
-        if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
-            throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
-        }
+    public AppComponentsContainerImpl(String pathToConfig) {
+        this(new Reflections(pathToConfig)
+                .get(SubTypes.of(TypesAnnotated
+                        .with(AppComponentsContainerConfig.class)).asClass()));
     }
 
     @Override
@@ -115,12 +51,12 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 .filter(appComponent -> componentClass.isAssignableFrom(appComponent.getClass()))
                 .peek(appComponent -> log.debug("find: {} {} ", componentClass, appComponent))
                 .toList();
-        if (components.size() == 1) {
-            return (C) components.get(0);
-        } else {
-            throw new RuntimeException("");
-        }
 
+        return switch (components.size()) {
+            case 1 -> (C) components.get(0);
+            case 0 -> throw new RuntimeException("Not Found component " + componentClass);
+            default -> throw new RuntimeException("More than one found" + componentClass);
+        };
     }
 
     @Override
@@ -128,34 +64,39 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         if (appComponentsByName.containsKey(componentName)) {
             return (C) appComponentsByName.get(componentName);
         } else {
-            throw new RuntimeException("Not Found Component");
+            throw new RuntimeException("Not Found Component " + componentName);
         }
     }
 
-    private class InfoMethod {
-        private final Method method;
-        private final int order;
-        private final Object bean;
+    private void processConfig(Class<?> configClass) {
+        checkConfigClass(configClass);
+        // You code here...
+        Object configBean = instantiate(configClass);
 
-        public InfoMethod(Method method, int order, Object bean) {
-            this.method = method;
-            this.order = order;
-            this.bean = bean;
-        }
-
-        public Method getMethod() {
-            return method;
-        }
-
-        public int getOrder() {
-            return order;
-        }
-
-        public Object getBean() {
-            return bean;
-        }
+        Arrays.stream(configClass.getDeclaredMethods())
+                .filter(m -> m.isAnnotationPresent(AppComponent.class))
+                .sorted(Comparator.comparingInt(method -> method.getAnnotation(AppComponent.class).order()))
+                .forEach(method -> {
+                    log.debug("configClass= {} method={}", configClass, method);
+                    var paramArg = Arrays.stream(method.getParameters())
+                            .peek(param -> log.debug("param: {}", param.getType()))
+                            .map(param -> getAppComponent(param.getType()))
+                            .toList();
+                    if (appComponentsByName.containsKey(method.getAnnotation(AppComponent.class).name())) {
+                        throw new RuntimeException("Component name already exist");
+                    } else {
+                        var appComponent = callMethod(configBean, method, paramArg.toArray());
+                        appComponents.add(appComponent);
+                        appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
+                    }
+                });
     }
 
+    private void checkConfigClass(Class<?> configClass) {
+        if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
+            throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
+        }
+    }
 
     private Object callMethod(Object object, Method method, Object... args) {
         try {

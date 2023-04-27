@@ -12,7 +12,7 @@ public class AppConfig2 {
         return new EquationPreparerImpl();
     }
 
-       @AppComponent(order = 2, name = "ioService")
+    @AppComponent(order = 2, name = "ioService")
     public IOService ioService() {
         return new IOServiceStreams(System.out, System.in);
     }

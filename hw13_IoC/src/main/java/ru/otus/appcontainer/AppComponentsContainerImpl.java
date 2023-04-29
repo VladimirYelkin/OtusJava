@@ -75,20 +75,23 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         Arrays.stream(configClass.getDeclaredMethods())
                 .filter(m -> m.isAnnotationPresent(AppComponent.class))
                 .sorted(Comparator.comparingInt(method -> method.getAnnotation(AppComponent.class).order()))
-                .forEach(method -> {
-                    log.debug("configClass= {} method={}", configClass, method);
-                    if (appComponentsByName.containsKey(method.getAnnotation(AppComponent.class).name())) {
-                        throw new RuntimeException("Component name already exist: " + method.getAnnotation(AppComponent.class).name());
-                    }
-                    var componentsArg = Arrays.stream(method.getParameters())
-                            .peek(param -> log.debug("param: {}", param.getType()))
-                            .map(param -> getAppComponent(param.getType()))
-                            .toList().toArray();
+                .forEach(method -> createComponent(method, configBean));
+    }
 
-                    var appComponent = callMethod(configBean, method, componentsArg);
-                    appComponents.add(appComponent);
-                    appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
-                });
+    private Object createComponent(Method method, Object configBean) {
+
+        if (appComponentsByName.containsKey(method.getAnnotation(AppComponent.class).name())) {
+            throw new RuntimeException("Component name already exist: " + method.getAnnotation(AppComponent.class).name());
+        }
+        var componentsArg = Arrays.stream(method.getParameterTypes())
+                .peek(param -> log.debug("param: {}", param))
+                .map(param -> getAppComponent(param))
+                .toList().toArray();
+
+        var appComponent = callMethod(configBean, method, componentsArg);
+        appComponents.add(appComponent);
+        appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), appComponent);
+        return appComponent;
     }
 
     private void checkConfigClass(Class<?> configClass) {

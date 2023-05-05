@@ -1,10 +1,9 @@
 package ru.otus.controllers;
 
 import org.springframework.web.bind.annotation.*;
-import ru.otus.crm.model.Client;
 import ru.otus.dto.ClientDto;
 import ru.otus.helper.MapperDto;
-import ru.otus.services.ClientService;
+import ru.otus.crm.services.ClientService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +22,7 @@ public class ClientRestController {
     @GetMapping("/api/client/{id}")
     public ClientDto getClientById(@PathVariable(name = "id") long id) {
         var client = clientService.findById(id);
-        if (client.isEmpty()) {
-            return null;
-        }
-        return mapperDto.toDto(client.get());
+        return client.map(mapperDto::toDto).orElse(null);
     }
 
     @GetMapping("/api/client/")
@@ -36,7 +32,7 @@ public class ClientRestController {
 
     @PostMapping("/api/client/")
     public ClientDto saveClient(@RequestBody ClientDto clientDto) {
-        return mapperDto.toDto(clientService.save(mapperDto.fromDto(clientDto)));
+        return mapperDto.toDto(clientService.save(mapperDto.toClient(clientDto)));
     }
 
 

@@ -1,4 +1,4 @@
-package ru.otus.services;
+package ru.otus.crm.services;
 
 import ru.otus.crm.model.Client;
 

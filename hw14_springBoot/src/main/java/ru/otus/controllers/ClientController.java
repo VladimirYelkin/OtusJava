@@ -3,11 +3,7 @@ package ru.otus.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.view.RedirectView;
-import ru.otus.crm.model.Client;
-import ru.otus.services.ClientService;
+import ru.otus.crm.services.ClientService;
 
 @Controller
 public class ClientController {
@@ -25,14 +21,8 @@ public class ClientController {
 
     @GetMapping("/admin")
     public String clientCreateView(Model model) {
-//        model.addAttribute("client", new Client());
         return "tools";
     }
 
-//    @PostMapping("/client/save")
-//    public RedirectView clientSave(@ModelAttribute Client client) {
-//        clientService.save(client);
-//        return new RedirectView("/", true);
-//    }
 
 }

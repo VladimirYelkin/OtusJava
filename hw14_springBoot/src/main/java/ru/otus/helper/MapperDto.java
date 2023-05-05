@@ -5,5 +5,5 @@ import ru.otus.dto.ClientDto;
 
 public interface MapperDto {
     ClientDto toDto(Client client);
-    Client fromDto (ClientDto clientDto);
+    Client toClient(ClientDto clientDto);
 }

@@ -1,11 +1,11 @@
-package ru.otus.services;
+package ru.otus.crm.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.otus.crm.model.Client;
-import ru.otus.repository.ClientRepository;
-import ru.otus.sessionmanager.TransactionClient;
+import ru.otus.crm.repository.ClientRepository;
+import ru.otus.crm.sessionmanager.TransactionClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class DbServiceClientImpl implements ClientService {
     @Override
     public List<Client> findAll() {
         var clientList = new ArrayList<Client>();
-        clientRepository.findAll().forEach(clientList::add);
+        clientList.addAll(clientRepository.findAll());
         log.info("clientList:{}", clientList);
         return clientList;
     }

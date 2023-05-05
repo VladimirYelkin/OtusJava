@@ -10,8 +10,9 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.Set;
 
 @Getter
-@Table(name = "client")
 @ToString
+@Table(name = "client")
+
 public class Client {
 
     @Id
@@ -20,10 +21,10 @@ public class Client {
     private final String name;
 
     @MappedCollection(idColumn = "client_id")
-    private Address address;
+    private final Address address;
 
     @MappedCollection(idColumn = "client_id")
-    private Set<Phone> phones;
+    private final Set<Phone> phones;
 
     @PersistenceCreator
     public Client(Long id, String name, Address address, Set<Phone> phones) {
@@ -31,5 +32,21 @@ public class Client {
         this.name = name;
         this.address = address;
         this.phones = phones;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Client client)) return false;
+
+        if (!id.equals(client.id)) return false;
+        return name.equals(client.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
     }
 }

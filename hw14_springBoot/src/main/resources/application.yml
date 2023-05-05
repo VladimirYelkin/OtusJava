@@ -12,7 +12,6 @@ spring:
 logging:
   level:
     org.springframework.jdbc.core.JdbcTemplate: TRACE
-    com.google.code.gson: TRACE
 
 
 

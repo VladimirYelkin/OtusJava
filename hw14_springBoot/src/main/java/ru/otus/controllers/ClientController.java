@@ -15,12 +15,12 @@ public class ClientController {
     }
 
     @GetMapping({"/","/index","index.hml"})
-    public String startView(Model model) {
+    public String startView() {
         return "index";
     }
 
     @GetMapping("/admin")
-    public String clientCreateView(Model model) {
+    public String clientCreateView() {
         return "tools";
     }
 

@@ -1,13 +1,12 @@
 package ru.otus.services;
 
-import org.springframework.stereotype.Service;
 import ru.otus.crm.model.Client;
-import ru.otus.repostory.ClientRepository;
+import ru.otus.repository.ClientRepository;
 
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 
-@Service
+
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
@@ -22,21 +21,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Client findById(long id) {
+    public Optional<Client> findById(long id) {
         return clientRepository.findById(id);
     }
 
-    @Override
-    public Client findByName(String name) {
-        return clientRepository.findByName(name);
-    }
 
-    @Override
-    public Client findRandom() {
-        List<Client> clients = clientRepository.findAll();
-        Random r = new Random();
-        return clients.stream().skip(r.nextInt(clients.size() - 1)).findFirst().orElse(null);
-    }
 
     @Override
     public Client save(Client client) {

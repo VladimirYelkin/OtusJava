@@ -4,11 +4,10 @@ import ru.otus.crm.model.Client;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ClientService {
     List<Client> findAll();
-    Client findById(long id);
-    Client findByName(String name);
-    Client findRandom();
+    Optional<Client> findById(long id);
     Client save(Client client);
 }

@@ -16,30 +16,29 @@ public class ClientRestController {
     private final MapperDto mapperDto;
 
     public ClientRestController(ClientService clientService, MapperDto mapperDto) {
-        this.clientService = clientService; this.mapperDto = mapperDto;
+        this.clientService = clientService;
+        this.mapperDto = mapperDto;
     }
 
     @GetMapping("/api/client/{id}")
     public ClientDto getClientById(@PathVariable(name = "id") long id) {
-        return mapperDto.toDto(clientService.findById(id));
+        var client = clientService.findById(id);
+        if (client.isEmpty()) {
+            return null;
+        }
+        return mapperDto.toDto(client.get());
     }
 
     @GetMapping("/api/client/")
-    public List<ClientDto> getAllClients () {return clientService.findAll().stream().map(mapperDto::toDto).collect(Collectors.toList());}
-
-//    @GetMapping("/api/client")
-//    public Client getClientByName(@RequestParam(name = "name") String name) {
-//        return clientService.findByName(name);
-//    }
+    public List<ClientDto> getAllClients() {
+        return clientService.findAll().stream().map(mapperDto::toDto).collect(Collectors.toList());
+    }
 
     @PostMapping("/api/client/")
     public ClientDto saveClient(@RequestBody ClientDto clientDto) {
         return mapperDto.toDto(clientService.save(mapperDto.fromDto(clientDto)));
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api/client/random")
-    public Client findRandomClient() {
-        return clientService.findRandom();
-    }
+
 
 }

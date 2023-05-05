@@ -13,14 +13,14 @@ public class MapperDtoImp implements MapperDto {
 
     @Override
     public Client fromDto(ClientDto clientDto) {
-        return new Client(clientDto.getId(),clientDto.getName()
-                ,new Address(null,clientDto.getStreetAddress())
-                , clientDto.getPhones().stream().map(number -> new Phone(null,number)).collect(Collectors.toList()));
+        return new Client(clientDto.getId(), clientDto.getName()
+                , new Address(null, clientDto.getStreetAddress(), clientDto.getId())
+                , clientDto.getPhones().stream().map(number -> new Phone(null, number, clientDto.getId())).collect(Collectors.toSet()));
     }
 
     @Override
     public ClientDto toDto(Client client) {
-        return new ClientDto(client.getId(), client.getName(), client.getAddress().getStreetAddress()
-                , client.getPhones().stream().map(phone -> phone.getNumber()).collect(Collectors.toList()));
+        return new ClientDto(client.getId(), client.getName(), client.getAddress().streetAddress()
+                , client.getPhones().stream().map(phone -> phone.number()).collect(Collectors.toSet()));
     }
 }

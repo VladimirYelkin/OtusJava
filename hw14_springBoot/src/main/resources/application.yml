@@ -1,0 +1,19 @@
+server:
+  port: 8080
+app:
+  client-list-page:
+    msg: Коля любит Мамбу!!!
+    msg2: ${app.client-list-page.msg} И Сережа тоже!
+
+logging:
+  level:
+    org.springframework.jdbc.core.JdbcTemplate: TRACE
+    com.google.code.gson: TRACE
+
+spring:
+  mvc:
+    converters:
+      # Preferred use of Gson
+      preferred-json: gson
+
+

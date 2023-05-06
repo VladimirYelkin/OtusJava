@@ -20,7 +20,7 @@ public class MapperDtoImpl implements MapperDto {
 
     @Override
     public ClientDto toDto(Client client) {
-        return new ClientDto(client.getId(), client.getName(), client.getAddress().streetAddress()
-                , client.getPhones().stream().map(Phone::number).collect(Collectors.toSet()));
+        return new ClientDto(client.getId(), client.getName(), client.getAddress().getStreetAddress()
+                , client.getPhones().stream().map(Phone::getNumber).collect(Collectors.toSet()));
     }
 }

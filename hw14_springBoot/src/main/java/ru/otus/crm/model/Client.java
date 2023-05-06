@@ -1,7 +1,8 @@
 package ru.otus.crm.model;
 
 
-import lombok.*;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.relational.core.mapping.MappedCollection;

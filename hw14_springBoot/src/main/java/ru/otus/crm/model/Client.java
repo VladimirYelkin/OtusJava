@@ -35,19 +35,4 @@ public class Client {
         this.phones = phones;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Client client)) return false;
-
-        if (!id.equals(client.id)) return false;
-        return name.equals(client.name);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        return result;
-    }
 }

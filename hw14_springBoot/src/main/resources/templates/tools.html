@@ -1,0 +1,173 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Клиенты</title>
+    <style>
+     h4 {
+            color: steelblue;
+        }
+
+     .clients-tab {
+            border: 1px solid steelblue;
+            width: 800px;
+            border-collapse: collapse;
+        }
+
+        .clients-tab tr td {
+            border: 1px solid steelblue;
+        }
+
+        .clients-tab-col1 {
+            width: 50px;
+			text-align: center;
+        }
+
+        .clients-tab-col2 {
+            width: 100;
+			text-align: center;
+        }
+
+        .clients-tab-col3 {
+            width: 300px;
+			text-align: center;
+        }
+
+        .clients-tab-col4 {
+            width: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+<script>
+        async function showAllClients() {
+           const container = document.getElementById('containerShowAll');
+           const responseA = await fetch("api/client/");
+           const resultA = await responseA.json();
+
+           let tableAll = document.createElement("table");
+           tableAll.classList.add("clients-tab");
+           let thead = document.createElement("thead");
+           let tr = document.createElement("tr");
+           let tdNameClasses = new Map([
+             ["id","clients-tab-col1"],
+             ["Name","clients-tab-col2"],
+             ["Address","clients-tab-col3"],
+             ["Phones","clients-tab-col4"]
+           ]);
+           tdNameClasses.forEach((value, key, map) => {
+               let td = document.createElement("td");
+               td.innerText = key;
+               td.classList.add(value);
+               tr.appendChild(td);
+           });
+           thead.appendChild(tr);
+           tableAll.append(thead);
+
+           resultA.forEach((clientJson) => {
+              let tr = document.createElement("tr");
+              var client = clientJson;
+
+              var phonesOfClient="";
+              client.phones.forEach((phone) => {
+                   phonesOfClient=phonesOfClient+" "+phone;
+              });
+              var clientObjectArray = [client.id,client.name,client.streetAddress,phonesOfClient];
+              clientObjectArray.forEach((item) => {
+                   let td = document.createElement("td");
+                   td.innerText = item;
+                   tr.appendChild(td);
+              });
+
+              tableAll.append(tr);
+           });
+           clearContainer(container);
+           container.appendChild(tableAll);
+        }
+
+        function addNewClient() {
+            const fioValue = document.getElementById("clientName");
+		    const addressValue = document.getElementById("clientAddress");
+		    const phoneValue = document.getElementById("clientPhone");
+		    const resultContainer =document.getElementById("infoAddedClient");
+		    let clientJson = {
+		        name: fioValue.value,
+		        streetAddress: addressValue.value,
+		        phones: [phoneValue.value]
+		    }
+		    console.log("Send POST JSON: ",JSON.stringify(clientJson));
+		    postJSON(clientJson,resultContainer);
+        }
+
+        async function postJSON(data,container) {
+          try {
+            const response = await fetch("api/client/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            console.log("Success:", result);
+            var phonesOfClient="";
+              result.phones.forEach((phone) => {
+                   phonesOfClient=phonesOfClient+" "+phone;
+              });
+            var client = [result.id,result.name,result.streetAddress,phonesOfClient];
+            let table = document.createElement("table");
+            table.classList.add("clients-tab");
+            let tbody = document.createElement("tbody");
+            let tr = document.createElement("tr");
+            client.forEach((item) => {
+              let td = document.createElement("td");
+              td.innerText = item;
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+            table.append(tr);
+            clearContainer(container);
+            container.appendChild(table);
+
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        }
+
+        function clearContainer (container) {
+           var first = container.firstElementChild;
+           while (first) {
+                 console.log("delete: ",container, first);
+                 container.removeChild(first);
+                 first = container.firstElementChild;
+           }
+        }
+    </script>
+
+<body>
+<h4>Добавить нового клиента</h4>
+<div>
+    <p>
+        <label for = "clientName">ФИО Клиента</label>
+        <input id = "clientName" name = "fio" type = "text" value = "Первая" placeholder="Введите имя клиента" >
+    </p>
+
+    <p>
+        <label for = "clientAddress">Адрес Клиента</label>
+        <input id = "clientAddress" name = "address" type = "text" value = "Город1 Улица2 дом3" placeholder="Введите адрес клиента">
+    </p>
+
+    <p>
+        <label for = "clientPhone">Телефон Клиента</label>
+        <input id = "clientPhone" name = "phone" type = "text" value = "8-999-123-45-67" placeholder="Введите телефон клиента">
+    </p>
+    <button onclick="addNewClient()"> Добавить клиента </button>
+</div>
+<pre id="infoAddedClient"></pre>
+<div>
+    <button onclick="showAllClients()"> Показать всех клиентов </button>
+</div>
+<pre id="containerShowAll"></pre>
+</table>
+</body>
+</html>

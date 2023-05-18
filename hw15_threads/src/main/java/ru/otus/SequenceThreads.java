@@ -5,46 +5,50 @@ import org.slf4j.LoggerFactory;
 
 import java.util.stream.IntStream;
 
-public class Demo {
-    private static final Logger logger = LoggerFactory.getLogger(Demo.class);
+public class SequenceThreads {
+    private static final Logger logger = LoggerFactory.getLogger(SequenceThreads.class);
     private Integer activeThread = 1;
-    private final Integer numbersThreads ;
+    private final Integer numbersThreads;
 
-    public static void main(String[] args) {
-        Demo demo = new Demo(2);
+    public static void main(String[] args) throws InterruptedException {
+        SequenceThreads demo = new SequenceThreads(2);
         demo.run();
     }
 
-    public Demo(int numbersThreads) {
+    public SequenceThreads(int numbersThreads) {
         this.numbersThreads = numbersThreads;
     }
 
-    public void run() {
-        IntStream.range(1, numbersThreads + 1)
-                .mapToObj(i -> new Thread(() -> action(i)))
-                .forEach(Thread::start);
+    public void run() throws InterruptedException {
+        var threads = IntStream.range(1, numbersThreads + 1)
+                .mapToObj(idThread -> new Thread(() -> sequence(idThread)))
+                .toList();
+        threads.forEach(Thread::start);
+        for (Thread thread : threads) {
+            thread.join();
+        }
     }
 
-    private synchronized void action(Integer threadId) {
+    private synchronized void sequence(Integer threadId) {
 
-        int i = 1;
+        int counter = 1;
         int delta = 1;
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 while (!(threadId.equals(activeThread))) {
-                    logger.debug("threadId = {} active thread {}",threadId, activeThread);
+                    logger.debug("threadId = {} active thread {}", threadId, activeThread);
                     this.wait();
                 }
 
-                if (i == 1) {
+                if (counter == 1) {
                     delta = 1;
-                } else if (i == 10) {
+                } else if (counter == 10) {
                     delta = -1;
                 }
-                logger.info("threadId={} value={}", threadId, i);
-                i = i + delta;
 
-                sleep(300);
+                logger.info("threadId={} value={}", threadId, counter);
+                counter += delta;
+                sleep(1000);
 
                 activeThread = (++activeThread > numbersThreads) ? 1 : activeThread;
                 logger.debug(" active thread set {}", activeThread);

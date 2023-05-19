@@ -4,14 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SequenceExecutor {
     private static final Logger logger = LoggerFactory.getLogger(SequenceExecutor.class);
+    private static final String FIRST_THREAD_NAME = "0";
+    private static final String SECOND_THREAD_NAME = "1";
+
+    private String activeThread = FIRST_THREAD_NAME;
     private final AtomicInteger counter = new AtomicInteger(0);
-    private final AtomicBoolean isReadyNewIncrement = new AtomicBoolean(true);
-    private final Object monitor = this;
+
 
     public static void main(String[] args) {
         SequenceExecutor sequenceExecutor = new SequenceExecutor();
@@ -20,51 +22,40 @@ public class SequenceExecutor {
 
     public void run() {
         var executor = Executors.newFixedThreadPool(2);
-        executor.submit(() -> generateSequenceAndShow(1, 10));
-        executor.submit(this::showSequenceDouble);
+
+        executor.submit(() -> sequence(FIRST_THREAD_NAME, SECOND_THREAD_NAME));
+        executor.submit(() -> sequence(SECOND_THREAD_NAME, FIRST_THREAD_NAME));
+
+        executor.shutdown();
     }
 
-    private void generateSequenceAndShow(int beginSequence, int endSequence) {
-        counter.set(beginSequence - 1);
+
+    private void sequence(String threadId, String nextThreadId) {
         int delta = 1;
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                synchronized (monitor) {
-                    while (!(isReadyNewIncrement.get())) {
+                synchronized (this) {
+                    while (!threadId.equals(activeThread)) {
                         this.wait();
                     }
-                    if (counter.get() == beginSequence) {
-                        delta = 1;
-                    } else if (counter.get() == endSequence) {
-                        delta = -1;
-                    }
-                    counter.addAndGet(delta);
-                    logger.info("threadId={} value={}", Thread.currentThread().getId(), counter.get());
-                    isReadyNewIncrement.set(false);
-                    sleep(1000);
-                    notifyAll();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-    private void showSequenceDouble() {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                synchronized (monitor) {
-                    while (isReadyNewIncrement.get()) {
-                        this.wait();
-                    }
-                    logger.info("threadId={} value={}", Thread.currentThread().getId(), counter.get());
-                    isReadyNewIncrement.set(true);
-                    sleep(1000);
-                    notifyAll();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
 
+                    if (FIRST_THREAD_NAME.equals(threadId)) {
+                        if (counter.get() == 1) {
+                            delta = 1;
+                        } else if (counter.get() == 10) {
+                            delta = -1;
+                        }
+                        counter.addAndGet(delta);
+
+                    }
+                    logger.info("threadId={} value={}", threadId, counter.get());
+                    activeThread = nextThreadId;
+                    sleep(300);
+                    notifyAll();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 

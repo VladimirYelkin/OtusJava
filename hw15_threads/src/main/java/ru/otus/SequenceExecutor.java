@@ -46,8 +46,8 @@ public class SequenceExecutor {
                             delta = -1;
                         }
                         counter.addAndGet(delta);
-
                     }
+
                     logger.info("threadId={} value={}", threadId, counter.get());
                     activeThread = nextThreadId;
                     sleep(300);

@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 
 public class SequenceThreads {
     private static final Logger logger = LoggerFactory.getLogger(SequenceThreads.class);
-    private Integer activeThread = 1;
+    private int activeThread = 1;
     private final Integer numbersThreads;
 
     public static void main(String[] args) throws InterruptedException {
@@ -29,13 +29,13 @@ public class SequenceThreads {
         }
     }
 
-    private synchronized void sequence(Integer threadId) {
+    private synchronized void sequence(int threadId) {
 
         int counter = 1;
         int delta = 1;
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                while (!(threadId.equals(activeThread))) {
+                while (threadId != activeThread) {
                     logger.debug("threadId = {} active thread {}", threadId, activeThread);
                     this.wait();
                 }

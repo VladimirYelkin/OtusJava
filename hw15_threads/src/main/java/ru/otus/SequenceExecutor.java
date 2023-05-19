@@ -16,15 +16,14 @@ public class SequenceExecutor {
 
 
     public static void main(String[] args) {
-        SequenceExecutor sequenceExecutor = new SequenceExecutor();
-        sequenceExecutor.run();
+        new SequenceExecutor().run();
     }
 
     public void run() {
         var executor = Executors.newFixedThreadPool(2);
 
-        executor.submit(() -> sequence(FIRST_THREAD_NAME, SECOND_THREAD_NAME));
         executor.submit(() -> sequence(SECOND_THREAD_NAME, FIRST_THREAD_NAME));
+        executor.submit(() -> sequence(FIRST_THREAD_NAME, SECOND_THREAD_NAME));
 
         executor.shutdown();
     }

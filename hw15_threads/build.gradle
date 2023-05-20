@@ -1,0 +1,11 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.otus'
+version 'unspecified'
+
+dependencies {
+    implementation("ch.qos.logback:logback-classic")
+}
+

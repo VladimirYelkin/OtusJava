@@ -13,7 +13,7 @@ dependencies {
     implementation "io.grpc:grpc-stub"
     implementation "com.google.protobuf:protobuf-java"
     implementation "com.google.errorprone:error_prone_annotations:${Versions.errorProneAnnotations}"
-
+    implementation("ch.qos.logback:logback-classic")
     implementation "org.apache.tomcat:annotations-api:${Versions.tomcatAnnotationsApi}"
 }
 

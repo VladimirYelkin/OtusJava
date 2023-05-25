@@ -46,6 +46,15 @@ public class GRPCSequenceClient {
             }
         });
 
+
+
+
+        latch.await();
+        channel.shutdown();
+    }
+
+
+    private static void cycleIncrementByAnswer (long begin,long end) throws InterruptedException {
         long currentValue = 0;
         long answerValue = 0;
         for (int i = 0; i < 51; i++) {
@@ -56,10 +65,6 @@ public class GRPCSequenceClient {
 
             logger.info("currentValue: {}", currentValue);
         }
-
-
-        latch.await();
-        channel.shutdown();
     }
 
     private static ManagedChannel createChannel(String serverHost, int port) {

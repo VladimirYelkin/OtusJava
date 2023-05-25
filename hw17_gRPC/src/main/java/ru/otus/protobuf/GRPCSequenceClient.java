@@ -36,7 +36,7 @@ public class GRPCSequenceClient {
 
             @Override
             public void onError(Throwable t) {
-                logger.error("Error:",t);
+                logger.error("Error:", t);
             }
 
             @Override
@@ -46,23 +46,21 @@ public class GRPCSequenceClient {
             }
         });
 
-
-
-
+        cycleIncrementByAnswer(0L, 51L);
         latch.await();
         channel.shutdown();
+
     }
 
 
-    private static void cycleIncrementByAnswer (long begin,long end) throws InterruptedException {
-        long currentValue = 0;
+    private static void cycleIncrementByAnswer(long begin, long end) throws InterruptedException {
+        long currentValue = begin;
         long answerValue = 0;
-        for (int i = 0; i < 51; i++) {
+        for (long i = currentValue; i < 51; i++) {
             Thread.sleep(TimeUnit.SECONDS.toMillis(1));
             answerValue = (answerValue == answer.longValue()) ? 0L : answer.longValue();
-            logger.info("answerValue {} ", answerValue);
+            logger.debug("answerValue {} ", answerValue);
             currentValue = currentValue + 1 + answerValue;
-
             logger.info("currentValue: {}", currentValue);
         }
     }

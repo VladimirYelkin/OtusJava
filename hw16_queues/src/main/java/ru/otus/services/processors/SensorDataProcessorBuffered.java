@@ -31,7 +31,13 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
             flush();
         }
         if (data != null) {
-            bufferedData.offer(data);
+            try {
+                if (!(bufferedData.offer(data)))  {
+                    log.error("Ошибка в процессе записи в буфер {}",data);
+                }
+            } catch (IllegalMonitorStateException e) {
+                log.error("Ошибка в процессе записи в буфер", e);
+            }
         }
     }
 

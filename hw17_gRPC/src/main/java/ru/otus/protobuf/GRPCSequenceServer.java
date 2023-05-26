@@ -15,7 +15,7 @@ public class GRPCSequenceServer {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        var remoteSequenceService= new RemoteSequenceServiceImpl();
+        var remoteSequenceService = new RemoteSequenceServiceImpl();
 
         var server = ServerBuilder
                 .forPort(SERVER_PORT)

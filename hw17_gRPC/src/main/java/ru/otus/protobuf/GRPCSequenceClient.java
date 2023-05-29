@@ -55,12 +55,9 @@ public class GRPCSequenceClient {
 
     private static void cycleIncrementByAnswer(long begin, long end) throws InterruptedException {
         long currentValue = begin;
-        long answerValue = 0;
         for (long i = currentValue; i < end; i++) {
             Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-            answerValue = (answerValue == answer.longValue()) ? 0L : answer.longValue();
-            logger.debug("answerValue {} ", answerValue);
-            currentValue = currentValue + 1 + answerValue;
+            currentValue = currentValue + 1 + answer.getAndSet(0);
             logger.info("currentValue: {}", currentValue);
         }
     }

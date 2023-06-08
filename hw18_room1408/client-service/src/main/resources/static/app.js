@@ -2,7 +2,10 @@ let stompClient = null;
 
 const chatLineElementId = "chatLine";
 const roomIdElementId = "roomId";
+const messageLabelElementId = "messageLabel";
 const messageElementId = "message";
+const sendElementId ="send";
+const roomAllMessage = 1408;
 
 
 const setConnected = (connected) => {
@@ -22,8 +25,20 @@ const connect = () => {
 
         const roomId = document.getElementById(roomIdElementId).value;
         console.log(`Connected to roomId: ${roomId} frame:${frame}`);
+        if (roomId == roomAllMessage) {
+             hideSendMsg(true);
+        }
         stompClient.subscribe(`/topic/response.${roomId}`, (message) => showMessage(JSON.parse(message.body).messageStr));
     });
+}
+
+const hideSendMsg = (show) => {
+   document.getElementById(messageLabelElementId).disabled = show;
+   document.getElementById(messageLabelElementId).hidden = show;
+   document.getElementById(messageElementId).disabled = show;
+   document.getElementById(messageElementId).hidden = show;
+   document.getElementById(sendElementId).disabled = show;
+   document.getElementById(sendElementId).hidden = show;
 }
 
 const disconnect = () => {
@@ -31,6 +46,7 @@ const disconnect = () => {
         stompClient.disconnect();
     }
     setConnected(false);
+    hideSendMsg(false);
     console.log("Disconnected");
 }
 

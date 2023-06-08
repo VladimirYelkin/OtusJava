@@ -22,6 +22,7 @@ public class MessageController {
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     private static final String TOPIC_TEMPLATE = "/topic/response.";
+    private static final long ROOM_ID_ALL = 1408L;
 
     private final WebClient datastoreClient;
     private final SimpMessagingTemplate template;
@@ -74,7 +75,15 @@ public class MessageController {
     }
 
     private Flux<Message> getMessagesByRoomId(long roomId) {
-        return datastoreClient.get().uri(String.format("/msg/%s", roomId))
+        logger.info("get messages by roomId:{}", roomId);
+        String request;
+        if (ROOM_ID_ALL != roomId) {
+            request = String.format("/msg/%s", roomId);
+        } else {
+            request = "/msg/all";
+        }
+
+        return datastoreClient.get().uri(request)
                 .accept(MediaType.APPLICATION_NDJSON)
                 .exchangeToFlux(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {

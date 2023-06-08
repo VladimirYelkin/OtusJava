@@ -11,4 +11,8 @@ public interface MessageRepository extends ReactiveCrudRepository<Message, Long>
     @Query("select * from message where room_id = :room_id order by id")
     Flux<Message> findByRoomId(@Param("roomId") String roomId);
 
+    @Query("select * from message order by id")
+    Flux<Message> findAllRoom();
+
+
 }

@@ -15,6 +15,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 @Service
 public class DataStoreR2dbc implements DataStore {
     private static final Logger log = LoggerFactory.getLogger(DataStoreR2dbc.class);
+    private static final String ALL_ROOM = "all";
     private final MessageRepository messageRepository;
     private final Scheduler workerPool;
 
@@ -32,7 +33,7 @@ public class DataStoreR2dbc implements DataStore {
     @Override
     public Flux<Message> loadMessages(String roomId) {
         log.info("loadMessages roomId:{}", roomId);
-        if ("all".equals(roomId)) {
+        if (ALL_ROOM.equals(roomId)) {
             return messageRepository.findAllRoom()
                     .delayElements(Duration.of(1, SECONDS), workerPool);
         } else {

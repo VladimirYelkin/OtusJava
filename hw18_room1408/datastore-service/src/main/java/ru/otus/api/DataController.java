@@ -1,19 +1,15 @@
 package ru.otus.api;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import ru.otus.domain.Message;
 import ru.otus.domain.MessageDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 import ru.otus.service.DataStore;
 
 @RestController
@@ -42,6 +38,16 @@ public class DataController {
 
         log.info("messageFromChat, roomId:{}, msg:{} done", roomId, messageStr);
         return msgId;
+    }
+
+
+    @GetMapping(value = "/msg/all", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<MessageDto> getAllMessages() {
+        log.info("getAllMessages");
+        return Flux.from(dataStore.loadAllMessages())
+                .map(message -> new MessageDto("room" + message.getRoomId() + ": " + message.getMsgText()))
+                .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
+                .subscribeOn(workerPool);
     }
 
     @GetMapping(value = "/msg/{roomId}", produces = MediaType.APPLICATION_NDJSON_VALUE)

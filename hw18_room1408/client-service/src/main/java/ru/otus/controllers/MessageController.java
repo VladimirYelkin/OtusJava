@@ -38,9 +38,10 @@ public class MessageController {
         if (!String.valueOf(ROOM_ID_ALL).equals(roomId)) {
             saveMessage(roomId, message)
                     .subscribe(msgId -> logger.info("message send id:{}", msgId));
-
             template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, roomId),
                     new Message(HtmlUtils.htmlEscape(message.messageStr())));
+            template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, ROOM_ID_ALL),
+                    new Message(HtmlUtils.htmlEscape("room%s: %s".formatted(String.valueOf(roomId), message.messageStr()))));
         }
     }
 

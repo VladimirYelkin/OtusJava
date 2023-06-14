@@ -17,3 +17,6 @@ include 'hw15_threads'
 include 'hw16_queues'
 include 'hw17_gRPC'
 
+include 'hw18_room1408:client-service'
+include 'hw18_room1408:datastore-service'
+

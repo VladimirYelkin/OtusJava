@@ -20,3 +20,5 @@ include 'hw17_gRPC'
 include 'hw18_room1408:client-service'
 include 'hw18_room1408:datastore-service'
 
+include 'project:client'
+include 'project:datastore-service'

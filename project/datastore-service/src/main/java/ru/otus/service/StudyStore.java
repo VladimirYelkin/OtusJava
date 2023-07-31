@@ -10,5 +10,5 @@ public interface StudyStore {
 
     Flux<Study> loadStudy(String telegramUid);
 
-//    Mono<Void> existsStudy(String telegramUid);
+    Mono<Boolean> existsStudy(String telegramUid);
 }

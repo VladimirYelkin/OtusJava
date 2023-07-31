@@ -43,6 +43,7 @@ allprojects {
             dependency("com.google.code.findbugs:jsr305:${Versions.jsr305}")
             dependency("com.github.tomakehurst:wiremock:${Versions.wiremock}")
             dependency("io.r2dbc:r2dbc-postgresql:${Versions.r2dbcPostgresql}")
+//            springdoc-openapi-starter
         }
     }
 

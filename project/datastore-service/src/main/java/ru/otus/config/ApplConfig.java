@@ -20,9 +20,10 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.annotation.NonNull;
 
+
 @Configuration
 public class ApplConfig {
-    private static final int THREAD_POOL_SIZE = 2;
+    private static final int THREAD_POOL_SIZE = 4;
 
     @Bean
     public ReactiveWebServerFactory reactiveWebServerFactory() {

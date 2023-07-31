@@ -33,16 +33,16 @@ public class StudyStoreR2dbc implements StudyStore {
     @Override
     public Flux<Study> loadStudy (String telegramUid) {
 
-//        existsStudy(telegramUid).log().subscribe();
+        existsStudy(telegramUid).log().subscribe();
         log.info("loadStudyByTelegramUid {}", telegramUid);
         return studyRepository.findByTelegramUid(telegramUid)
                 .delayElements(Duration.of(1, SECONDS), workerPool);
     }
 
-//    @Override
-//    public Mono<Void> existsStudy (String telegramUid) {
-//        log.info("existsStudyByTelegramUid {}", telegramUid);
-//        return studyRepository.existsByTelegramUid(telegramUid);
-//    }
+    @Override
+    public Mono<Boolean> existsStudy (String telegramUid) {
+        log.info("existsStudyByTelegramUid {}", telegramUid);
+        return studyRepository.existsByTelegramUid(telegramUid);
+    }
 
 }

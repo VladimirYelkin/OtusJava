@@ -13,7 +13,10 @@ public interface TrainingStory {
 
      Flux<Training> loadTrainingByIdCoach(Long idCoach);
 
-     Mono<Training> loadTraining(Long id);
+
+    Flux<Training> loadListTrainingFor5NextDays();
+
+    Mono<Training> loadTraining(Long id);
 
     Mono<StudyOnTraining> saveSignOnTraining(StudyOnTraining studyOnTraining);
 

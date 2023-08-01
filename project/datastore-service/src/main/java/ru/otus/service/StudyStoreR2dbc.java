@@ -31,7 +31,7 @@ public class StudyStoreR2dbc implements StudyStore {
     }
 
     @Override
-    public Flux<Study> loadStudy (String telegramUid) {
+    public Flux<Study> loadStudy(String telegramUid) {
 
         existsStudy(telegramUid).log().subscribe();
         log.info("loadStudyByTelegramUid {}", telegramUid);
@@ -40,9 +40,14 @@ public class StudyStoreR2dbc implements StudyStore {
     }
 
     @Override
-    public Mono<Boolean> existsStudy (String telegramUid) {
+    public Mono<Boolean> existsStudy(String telegramUid) {
         log.info("existsStudyByTelegramUid {}", telegramUid);
         return studyRepository.existsByTelegramUid(telegramUid);
     }
 
+    @Override
+    public Mono<Long> getIdByTelegramUid(String telegramUid) {
+        log.info("StudyGetIdByTelegramUid {}", telegramUid);
+        return studyRepository.getIdByTelegramUid(telegramUid);
+    }
 }

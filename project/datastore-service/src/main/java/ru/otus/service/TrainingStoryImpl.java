@@ -15,8 +15,6 @@ import ru.otus.repository.StudyOnTrainingRepository;
 import ru.otus.repository.TrainingRepository;
 import ru.otus.repository.TypeOfTrainingRepository;
 
-import java.util.function.Function;
-
 @Service
 public class TrainingStoryImpl implements TrainingStory {
     private static final Logger log = LoggerFactory.getLogger(TrainingStoryImpl.class);
@@ -56,6 +54,17 @@ public class TrainingStoryImpl implements TrainingStory {
     }
 
     @Override
+    public Flux<Training> loadListTrainingFor5NextDays() {
+        log.info("loadListTrainingFor5NextDays ");
+        return trainingRepository.listOfTraining5Days()
+                .log()
+                .publishOn(workerPool)
+                .flatMap(this::addedTypeTrainingInfo)
+                .subscribeOn(workerPool)
+                .flatMap(this::addedCoachInfo);
+    }
+
+    @Override
     public Mono<Training> loadTraining(Long id) {
         log.info("trainingById {}", id);
 
@@ -68,10 +77,13 @@ public class TrainingStoryImpl implements TrainingStory {
                 .elementAt(0);
     }
 
+
+
     @Override
     public Mono<StudyOnTraining> saveSignOnTraining(StudyOnTraining studyOnTraining) {
-//        studyOnTrainingRepository.loadRecordByIdTrainingIdStudy(studyOnTraining.getIdTraining(), studyOnTraining.getIdStudy())
-        return studyOnTrainingRepository.saveRecord(studyOnTraining.getIdTraining(), studyOnTraining.getIdStudy());
+        log.info("saveSignOnTraining {}", studyOnTraining );
+        return studyOnTrainingRepository
+                .saveRecord(studyOnTraining.getIdTraining(), studyOnTraining.getIdStudy());
     }
 
 
@@ -101,21 +113,16 @@ public class TrainingStoryImpl implements TrainingStory {
                 .subscribeOn(workerPool)
                 .log("addedTypeTrainingInfo")
                 .publishOn(workerPool)
-                .map(new Function<TypeOfTraining, Training>() {
-                    @Override
-                    public Training apply(TypeOfTraining typeOfTraining) {
-                        return preBuildTraining(trainingPre)
-                                .typeOfTraining(typeOfTraining)
-                                .build();
-                    }
-                })
-                ;
+                .map(typeOfTraining -> preBuildTraining(trainingPre)
+                        .typeOfTraining(typeOfTraining)
+                        .build());
     }
 
-    private static Training.TrainingBuilder preBuildTraining(Training training) {
+    private  Training.TrainingBuilder preBuildTraining(Training training) {
         return Training.builder().id(training.getId()).idType(training.getIdType())
                 .localDateTime(training.getLocalDateTime())
-                .minColStudy(training.getMinColStudy()).maxColStudy(training.getMaxColStudy())
+                .minColStudy(training.getMinColStudy())
+                .maxColStudy(training.getMaxColStudy())
                 .idCoach(training.getIdCoach())
                 .coach(training.getCoach())
                 .typeOfTraining(training.getTypeOfTraining());

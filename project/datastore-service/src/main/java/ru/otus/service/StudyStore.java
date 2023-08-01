@@ -11,4 +11,6 @@ public interface StudyStore {
     Flux<Study> loadStudy(String telegramUid);
 
     Mono<Boolean> existsStudy(String telegramUid);
+
+    Mono<Long> getIdByTelegramUid(String telegramUid);
 }

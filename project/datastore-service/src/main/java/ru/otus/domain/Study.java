@@ -61,7 +61,7 @@ public class Study {
 
     @Override
     public String toString() {
-        return "Client{" +
+        return "Study{" +
                 "id=" + id +
                 ", telegramUID='" + telegramUID + '\'' +
                 ", firstName='" + firstName + '\'' +

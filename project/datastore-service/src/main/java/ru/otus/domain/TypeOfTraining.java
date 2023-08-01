@@ -1,5 +1,6 @@
 package ru.otus.domain;
 
+import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 
 @Table("typetraining")
 @ToString
+@Getter
 public class TypeOfTraining {
 
     @Id

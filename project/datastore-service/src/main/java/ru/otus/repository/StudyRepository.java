@@ -18,4 +18,7 @@ public interface StudyRepository extends ReactiveCrudRepository<Study, Long> {
     @Query("SELECT exists  (SELECT id  FROM public.study where telegram_uid = :telegram_uid )")
     Mono<Boolean> existsByTelegramUid(@Param("telegramUid") String telegramUid);
 
+    @Query("SELECT id  FROM study where telegram_uid = :telegram_uid")
+    Mono<Long> getIdByTelegramUid(@Param("telegramUid") String telegramUid);
+
 }

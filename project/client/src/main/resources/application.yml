@@ -1,0 +1,9 @@
+server:
+  port: 8082
+
+bot:
+  name: PetProjectShedullerBot
+  token: 5839817757:AAGsyjXfdAQEGrYQgT9vJT7wgSOtSgme5ZA
+
+datastore:
+  url: http://localhost:8888

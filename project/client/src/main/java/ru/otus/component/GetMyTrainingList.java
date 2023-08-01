@@ -15,13 +15,25 @@ public class GetMyTrainingList implements GetData {
 
     @Override
     public Flux<StringValue> exec(WebClient datastoreClient, Message message) {
-        var result = data(datastoreClient,message.getChat().getId());
+        var result = data(datastoreClient, message.getChat().getId());
         return result.log()
-                .defaultIfEmpty(new StringValue("not found info about list of trainings for  telegram %d not found".formatted(message.getChat().getId()),0L));
+                .defaultIfEmpty(new StringValue("not found info about list of trainings for  telegram %d not found".formatted(message.getChat().getId()), 0L));
     }
 
-    public Flux<StringValue> data(WebClient datastoreClient,  long telegramUID) {
+    public Flux<StringValue> data(WebClient datastoreClient, long telegramUID) {
         log.info("request for training for Telegram UID:{}", telegramUID);
+
+        var coachList = datastoreClient.get().uri(String.format("/v1/Coach/%d", telegramUID))
+                .accept(MediaType.APPLICATION_NDJSON)
+                .retrieve()
+                .bodyToFlux(StringValue.class)
+                .flatMap(stringValue -> {
+                    return datastoreClient.get().uri(String.format("/v1/MyTrainingCoach/%d", stringValue.id()))
+                            .accept(MediaType.APPLICATION_NDJSON)
+                            .retrieve()
+                            .bodyToFlux(StringValue.class);
+                });
+
 
         return datastoreClient.get().uri(String.format("/v1/idStudy/%d", telegramUID))
                 .accept(MediaType.APPLICATION_NDJSON)
@@ -36,6 +48,7 @@ public class GetMyTrainingList implements GetData {
 //                            .map(stringValue -> {return new StringValue(stringValue.value(), stringValue.id());})
                             ;
                 })
-                .doOnNext(val -> log.info("val:{}", val));
+                .doOnNext(val -> log.info("val:{}", val))
+                .switchIfEmpty(coachList);
     }
 }

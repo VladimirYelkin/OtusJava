@@ -15,18 +15,22 @@ public class GetInfoUser implements GetData {
 
     @Override
     public Flux<StringValue> exec(WebClient datastoreClient, Message message) {
-        var result = data(datastoreClient,message.getChat().getId());
+        var result = data(datastoreClient, message.getChat().getId());
         return result.log()
-                .defaultIfEmpty(new StringValue("study with telegram %d not found".formatted(message.getChat().getId()),0L));
+                .defaultIfEmpty(new StringValue("not info with telegram %d not found".formatted(message.getChat().getId()), 0L));
     }
 
-    public Flux<StringValue> data(WebClient datastoreClient,  long telegramUID) {
+    private Flux<StringValue> data(WebClient datastoreClient, long telegramUID) {
         log.info("request for Info  for Telegram UID {}", telegramUID);
-
-        return datastoreClient.get().uri(String.format("/v1/Study/%d", telegramUID))
-                .accept(MediaType.APPLICATION_NDJSON)
-                .retrieve()
-                .bodyToFlux(StringValue.class)
+        return Flux.merge(
+                        datastoreClient.get().uri(String.format("/v1/Study/%d", telegramUID))
+                                .accept(MediaType.APPLICATION_NDJSON)
+                                .retrieve()
+                                .bodyToFlux(StringValue.class),
+                        datastoreClient.get().uri(String.format("/v1/Coach/%d", telegramUID))
+                                .accept(MediaType.APPLICATION_NDJSON)
+                                .retrieve()
+                                .bodyToFlux(StringValue.class))
                 .doOnNext(val -> log.info("val:{}", val));
     }
 }

@@ -15,13 +15,13 @@ public class GetTrainingList implements GetData {
 
     @Override
     public Flux<StringValue> exec(WebClient datastoreClient, Message message) {
-        var result = data(datastoreClient,message.getChat().getId());
+        var result = data(datastoreClient);
         return result.log()
                 .defaultIfEmpty(new StringValue("study with telegram %d not found".formatted(message.getChat().getId()),0L));
     }
 
-    public Flux<StringValue> data(WebClient datastoreClient,  long seed) {
-        log.info("request for data, seed:{}", seed);
+    public Flux<StringValue> data(WebClient datastoreClient) {
+        log.info("request for list for all trainings ");
 
         return datastoreClient.get().uri(String.format("/v1/listTrainings"))
                 .accept(MediaType.APPLICATION_NDJSON)

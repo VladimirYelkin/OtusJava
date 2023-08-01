@@ -62,7 +62,6 @@ public class DataController {
                 .doOnNext(telegramUid -> log.info("getStudyByTelegramUID=:{}", telegramUid))
                 .flatMap(studyStore::getIdByTelegramUid)
                 .log()
-//                .map(study -> new StringValue(study.toString()))
                 .doOnNext(stringValue -> log.info("StringValue:{}", stringValue))
                 .subscribeOn(workerPool);
     }
